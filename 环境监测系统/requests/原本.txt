@@ -1,0 +1,43 @@
+
+登陆区也用form吧
+ajax
+url: /emsys/login/
+method: get
+	params:
+		user  str  用户名
+		password  str  密码
+	return:
+		status  ：0（登陆成功）、1（密码错误）、2（用户名不存在）
+设备管理以及人员管理要不。。。还是用form直接提交算了？这样还能刷新页面？这样的话我写就可以。
+还是全都用ajax？以下是ajax的话的协议，写完之后觉得还是直接form提交好吧
+Ajax(or form?)
+添加设备：
+action: /emsys/dev/add/
+method: get
+	params:
+		name  str  设备名字
+		site  str  放置地点
+		disc  str  描述
+		data  float  这台设备要接收的数据（1/1.5/1.75/…）
+	return:
+		status  ：0（添加成功）、1（没有权限）
+	
+	编辑设备：
+url: /emsys/dev/edit/
+method: get
+	params:
+		name  str  设备名字
+		site  str  放置地点
+		disc  str  描述
+		data  float  这台设备要接收的数据（1/1.5/1.75/…）
+	return:
+		status  ：0（编辑成功）、1（没有权限）
+
+删除设备：
+url: /emsys/dev/del/
+method: get
+	params:
+		name  str  设备名字
+	return:
+		status  ：0（删除成功）、1（没有权限）
+
