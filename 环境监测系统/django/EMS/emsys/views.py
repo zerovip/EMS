@@ -1,13 +1,14 @@
+import socket
+
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from .models import User, Usergroup
 
-import socket
+from .models import User, Usergroup
 
 #######################################################################################################################################
 #预处理或功能集成部分
 #######################################################################################################################################
-#权限列表
+#登陆后的权限列表
 def ls_perm(username):
     user=User.objects.get(username=username)
     list_p = {
