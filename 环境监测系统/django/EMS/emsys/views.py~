@@ -25,19 +25,19 @@ def ls_perm(username):
         all_m_s = Usergroup.objects.all()
         mas_ls = {}
         for it_m_s in all_m_s:
+            per_ls = {}
+            for person in User.objects.filter(group=it_m_s):
+                per_ls['{0}'.format(person.id)] = person.username
             mas_ls['{0}'.format(it_m_s.groupname)] = (
                     it_m_s.id,
-                    User.objects.get(group=it_m_s)
+                    per_ls,
                     )
         list_p['master_s'] = mas_ls
-        for item in mas_ls:
-            print(mas_ls[item][0])
-            print(mas_ls[item][1].id)
-    list_p['lalala']={'asd':(1,'sss')}
     elif user.master == 'G':
         group = user.group
-        list_p['group_n'] = group
-        list_p['group_m'] = User.objects.get(group=group)
+        list_p['group_id'] = group.id
+        list_p['group_n'] = group.groupname
+        list_p['group_m'] = User.objects.filter(group=group)
     return list_p
 
 #处理cookies部分
@@ -91,7 +91,7 @@ def login_check(func):
 #######################################################################################################################################
 #登陆
 def login(request):
-    logged = ''
+    logged = {'device_p':Device.objects.all()}
     tip = ''
     status = 0
     if request.method == 'POST':
@@ -128,7 +128,7 @@ def logout(request):
     s = Session(request)
     if s.username != None:
         s.del_session()
-    return HttpResponseRedirect('/emsys/')
+    return redirect('/emsys/')
 
 #首页
 @login_check

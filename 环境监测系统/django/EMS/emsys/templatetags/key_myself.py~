@@ -1,7 +1,0 @@
-@register.filter
-def key_myself_1(d, key_name):
-    return d[key_name][1]
-
-@register.filter
-def key_myself_0(d, key_name):
-    return d[key_name][0]
