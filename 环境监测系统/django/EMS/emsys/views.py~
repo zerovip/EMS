@@ -1,8 +1,9 @@
 import socket
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
-from .models import User, Usergroup
+
+from .models import User, Usergroup, Device
 
 #######################################################################################################################################
 #预处理或功能集成部分
@@ -20,6 +21,7 @@ def ls_perm(username):
             'device':user.device,
             'master':user.master,
             }
+#    if device
     return list_p
 
 #处理cookies部分
@@ -90,6 +92,7 @@ def login(request):
                         request.session['password'] = password
                         logged = ls_perm(username)
                         status = 1
+                        return redirect('index')
                 except User.DoesNotExist:
                     tip = '该用户名未注册。'
             else:
@@ -97,7 +100,7 @@ def login(request):
         else:
             tip = '请输入用户名。'
     else:
-        return HttpResponseRedirect('/emsys/')
+        return redirect('/emsys/')
     return render(request, 'emsys/index.html',{
         'tip':tip,
         'status':status,
