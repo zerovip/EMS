@@ -19,8 +19,25 @@ def ls_perm(username):
             'pm10':user.pm10,
             'device':user.device,
             'master':user.master,
+            'device_p':Device.objects.all(),
             }
-#    if device
+    if user.master == 'S':
+        all_m_s = Usergroup.objects.all()
+        mas_ls = {}
+        for it_m_s in all_m_s:
+            mas_ls['{0}'.format(it_m_s.groupname)] = (
+                    it_m_s.id,
+                    User.objects.get(group=it_m_s)
+                    )
+        list_p['master_s'] = mas_ls
+        for item in mas_ls:
+            print(mas_ls[item][0])
+            print(mas_ls[item][1].id)
+    elif user.master == 'G':
+        group = user.group
+        list_p['group_n'] = group
+        list_p['group_m'] = User.objects.get(group=group)
+    list_p['lalala']={'asd':(1,'sss')}
     return list_p
 
 #处理cookies部分

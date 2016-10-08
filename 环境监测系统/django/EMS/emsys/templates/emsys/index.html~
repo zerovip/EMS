@@ -1,29 +1,62 @@
 <!DOCTYPE html>
 {% load staticfiles %}
+{% load key_myself %}
 <html>
         <head>
                 <title>首页</title>
         </head>
         <body>
-        {% if status == 0 %}
-        <form action="/emsys/login/" method="post">
-                {% csrf_token %}
-                <p>请登录：</p>
-                <p>用户名：<input type="text" name="username" /></p>
-                <p>密码：<input type="password" name="password" /></p>
-                <input type="submit" value="登陆" />
-                <p>{{tip}}</p>
-        </form>
-        {% elif status == 1 %}
-        已登陆：{{logged.username}}<br/>
-        {{logged.charge}}
-        {{logged.tem}}
-        {{logged.hum}}
-        {{logged.pm25}}
-        {{logged.pm10}}
-        {{logged.device}}
-        {{logged.master}}
-            <a href='/emsys/logout/'>退出</a>
-        {% endif %}
+            <h1>数据展示部分</h1>
+                <h3><input name='adv' type='radio'>地点优先</input></h3>
+                    {% for device in logged.device_p %}
+                    <h5><input type="checkbox">{{device}}</input></h5>
+                    {% endfor %}
+                <h3><input name='adv' type='radio'>数据优先</input></h3>
+                    <h5><input type="checkbox">温度</input></h5>
+                    <h5><input type="checkbox">湿度</input></h5>
+                    <h5><input type="checkbox">PM2.5</input></h5>
+                    <h5><input type="checkbox">PM10</input></h5>
+            <h1>管理部分</h1>
+                <h3>登录区</h3>
+                    {% if status == 0 %}
+                        <form action="/emsys/login/" method="post">
+                            {% csrf_token %}
+                            <p>请登录：</p>
+                            <p>用户名：<input type="text" name="username" /></p>
+                            <p>密码：<input type="password" name="password" /></p>
+                            <input type="submit" value="登陆" />
+                            <p>{{tip}}</p>
+                        </form>
+                    {% elif status == 1 %}
+                        已登陆：{{logged.username}}<br/>
+                        {{logged.charge}}<br/>
+                        {{logged.tem}}<br/>
+                        {{logged.hum}}<br/>
+                        {{logged.pm25}}<br/>
+                        {{logged.pm10}}<br/>
+                        {{logged.device}}<br/>
+                        {{logged.master}}<br/>
+                        <a href='/emsys/logout/'>退出</a>
+                    {% endif %}
+                {% if logged.device == True %}
+                    <h3>设备管理区</h3>
+                        {% for device in logged.device_p %}
+                        <h5><a href='/emsys/dev/edit/{{device.id}}/'>{{device}}</a></h5>
+                        {% endfor %}
+                        <h5><a href='/emsys/dev/add/'>添加设备</a></h5>
+                {% endif %}
+                {% if logged.master == 'S' %}
+                {{logged.lalala.asd}}
+                    <h3>用户管理区</h3>
+                    {% for item in logged.master_s %}
+                        <h4><a href='/emsys/usergroup/{{logged.master_s|key_myself_0:item}}/'>{{item}}</a></h4>
+                            {{logged.master_s|key_myself_1:item}}
+                            <h5><a href='/emsys/user/{{i.id}}/'>{{i.name}}</a></h5>
+                    {% endfor %}
+                {% elif logged.master == 'G' %}
+
+                {% elif logged.master == 'N' %}
+
+                {% endif %}
         </body>
 </html>
