@@ -137,8 +137,97 @@ def index(request):
     return render(request, 'emsys/index.html', {
         'tip':'',
         'status':1,
+        'logged':ls_perm(username),
+        })
+
+#添加设备页
+def dev_add(request):
+    username = request.session.get('username')
+    return render(request, 'emsys/add.html', {
+        'tip':'',
+        'status':1,
+        'logged':ls_perm(username),
+        'object':'设备',
+        })
+
+#编辑设备页
+def dev_edit(request, id):
+    username = request.session.get('username')
+    return render(request, 'emsys/edit.html', {
+        'tip':'',
+        'status':1,
+        'logged':ls_perm(username),
+        'object':'设备',
+        })
+
+#添加用户组页
+def usgp_add(request):
+    username = request.session.get('username')
+    return render(request, 'emsys/add.html', {
+        'tip':'',
+        'status':1,
+        'logged':ls_perm(username),
+        'object':'用户组',
+        })
+
+#编辑用户组页
+def usgp_edit(request, id):
+    username = request.session.get('username')
+    return render(request, 'emsys/edit.html', {
+        'tip':'',
+        'status':1,
+        'logged':ls_perm(username),
+        'object':'用户组',
+        })
+
+#添加用户页
+def user_add(request):
+    username = request.session.get('username')
+    return render(request, 'emsys/add.html', {
+        'tip':'',
+        'status':1,
+        'logged':ls_perm(username),
+        'object':'用户',
+        })
+
+#编辑用户页
+#这里加判断，如果id等于自己，redirect到self
+def user_edit(request, id):
+    username = request.session.get('username')
+    return render(request, 'emsys/edit.html', {
+        'tip':'',
+        'status':1,
+        'logged':ls_perm(username),
+        'object':'用户',
+        })
+
+#编辑个人信息页
+def self(request):
+    username = request.session.get('username')
+    return render(request, 'emsys/self.html', {
+        'tip':'',
+        'status':1,
+        'logged':ls_perm(username),
+        })
+
+#数据查询页
+def data_history(request):
+    username = request.session.get('username')
+    return render(request, 'emsys/data_history.html', {
+        'tip':'',
+        'status':1,
         'logged':ls_perm(username)
         })
+
+#警报设置页
+def data_warning(request):
+    username = request.session.get('username')
+    return render(request, 'emsys/data_warning.html', {
+        'tip':'',
+        'status':1,
+        'logged':ls_perm(username)
+        })
+
 
 
 #######################################################################################################################################

@@ -2,7 +2,7 @@
 {% load staticfiles %}
 <html>
         <head>
-                <title>首页</title>
+                <title>数据查询页</title>
                 <link rel="stylesheet" href="{% static 'emsys/styles/index.css' %}">
         </head>
         <body>
@@ -47,7 +47,7 @@
 
                 {% if logged.master == 'S' %}
                     <h3>用户管理区</h3>
-                    <h5><a href='emsys/usergroup/add/'>添加用户组</a></h5>
+                    <h5><a href='/emsys/usergroup/add/'>添加用户组</a></h5>
                     {% for key, value in logged.master_s.items %}
                         <h4><a href='/emsys/usergroup/edit/{{value.0}}/'>{{key}}</a></h4>
                             {% for key_, value_ in value.1.items %}
@@ -73,7 +73,7 @@
             {% endif %}
             </div>
             <div id='right'>
-                    主页，这里放豆豆提供给我的数据图，会用ajax通讯
+                    数据查询页
             </div>
         </body>
 </html>

@@ -3,8 +3,10 @@
 <html>
         <head>
                 <title>首页</title>
+                <link rel="stylesheet" href="{% static 'emsys/styles/index.css' %}">
         </head>
         <body>
+            <div id="left">
             <h1>数据展示部分</h1>
                 <h3><input name='adv' type='radio' checked="checked">地点优先</input></h3>
                     {% for device in logged.device_p %}
@@ -45,29 +47,33 @@
 
                 {% if logged.master == 'S' %}
                     <h3>用户管理区</h3>
-                    <h5><a href='emsys/usergroup/add/'>添加用户组</a></h5>
+                    <h5><a href='/emsys/usergroup/add/'>添加用户组</a></h5>
                     {% for key, value in logged.master_s.items %}
-                        <h4><a href='/emsys/usergroup/{{value.0}}/'>{{key}}</a></h4>
+                        <h4><a href='/emsys/usergroup/edit/{{value.0}}/'>{{key}}</a></h4>
                             {% for key_, value_ in value.1.items %}
-                            <h5><a href='emsys/user/{{key_}}/'>{{value_}}</a></h5>
+                            <h5><a href='/emsys/user/edit/{{key_}}/'>{{value_}}</a></h5>
                             {% endfor %}
-                            <h5><a href='emsys/user/add/'>添加用户</a></h5>
+                            <h5><a href='/emsys/user/add/'>添加用户</a></h5>
                     {% endfor %}
                 {% elif logged.master == 'G' %}
                     <h3>用户管理区</h3>
-                    <h4><a href='emsys/usergroup/{{logged.group_id}}'>{{logged.group_n}}</h4>
+                    <h4><a href='/emsys/usergroup/edit/{{logged.group_id}}'>{{logged.group_n}}</h4>
                         {% for person in logged.group_m %}
-                            <h5><a href='emsys/user/{{person.id}}'>{{person.username}}</a></h5>
+                            <h5><a href='/emsys/user/edit/{{person.id}}'>{{person.username}}</a></h5>
                         {% endfor %}
                 {% elif logged.master == 'N' %}
                     <h3>用户管理区</h3>
                 {% endif %}
-                    <h4><a href='emsys/user/self/'>修改个人信息</a></h4>
+                    <h4><a href='/emsys/user/self/'>修改个人信息</a></h4>
 
 
                     <h3>数据管理区</h3>
-                        <h5><a href='emsys/data/history/'>数据查询</a></h5>
-                        <h5><a href='emsys/data/warning/'>警报设置</a></h5>
+                        <h5><a href='/emsys/data/history/'>数据查询</a></h5>
+                        <h5><a href='/emsys/data/warning/'>警报设置</a></h5>
             {% endif %}
+            </div>
+            <div id='right'>
+                    主页，这里放豆豆提供给我的数据图，会用ajax通讯
+            </div>
         </body>
 </html>
