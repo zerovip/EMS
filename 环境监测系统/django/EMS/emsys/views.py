@@ -53,7 +53,7 @@ class Session:
 
 #检查登陆状态装饰器，未登录者只有最基本的查看实时数据的权限
 def login_check(func):
-    def wrapper(request):
+    def wrapper(request, id=0):
         status = 0
         tip = ''
         logged = {'device_p':Device.objects.all()}
@@ -76,7 +76,7 @@ def login_check(func):
                     tip = '密码已被更改，请重新登录。'
                     return resp(request, status, tip, logged)
                 else:
-                    midf=func(request)
+                    midf=func(request, id)
                     return midf
             except User.DoesNotExist:
                 request = s.del_session()
@@ -132,7 +132,7 @@ def logout(request):
 
 #首页
 @login_check
-def index(request):
+def index(request, id):
     username = request.session.get('username')
     return render(request, 'emsys/index.html', {
         'tip':'',
@@ -141,7 +141,8 @@ def index(request):
         })
 
 #添加设备页
-def dev_add(request):
+@login_check
+def dev_add(request, id):
     username = request.session.get('username')
     return render(request, 'emsys/add.html', {
         'tip':'',
@@ -151,6 +152,7 @@ def dev_add(request):
         })
 
 #编辑设备页
+@login_check
 def dev_edit(request, id):
     username = request.session.get('username')
     return render(request, 'emsys/edit.html', {
@@ -161,7 +163,8 @@ def dev_edit(request, id):
         })
 
 #添加用户组页
-def usgp_add(request):
+@login_check
+def usgp_add(request, id):
     username = request.session.get('username')
     return render(request, 'emsys/add.html', {
         'tip':'',
@@ -171,6 +174,7 @@ def usgp_add(request):
         })
 
 #编辑用户组页
+@login_check
 def usgp_edit(request, id):
     username = request.session.get('username')
     return render(request, 'emsys/edit.html', {
@@ -181,7 +185,8 @@ def usgp_edit(request, id):
         })
 
 #添加用户页
-def user_add(request):
+@login_check
+def user_add(request, id):
     username = request.session.get('username')
     return render(request, 'emsys/add.html', {
         'tip':'',
@@ -192,6 +197,7 @@ def user_add(request):
 
 #编辑用户页
 #这里加判断，如果id等于自己，redirect到self
+@login_check
 def user_edit(request, id):
     username = request.session.get('username')
     return render(request, 'emsys/edit.html', {
@@ -202,7 +208,8 @@ def user_edit(request, id):
         })
 
 #编辑个人信息页
-def self(request):
+@login_check
+def self(request, id):
     username = request.session.get('username')
     return render(request, 'emsys/self.html', {
         'tip':'',
@@ -211,7 +218,8 @@ def self(request):
         })
 
 #数据查询页
-def data_history(request):
+@login_check
+def data_history(request, id):
     username = request.session.get('username')
     return render(request, 'emsys/data_history.html', {
         'tip':'',
@@ -220,15 +228,14 @@ def data_history(request):
         })
 
 #警报设置页
-def data_warning(request):
+@login_check
+def data_warning(request, id):
     username = request.session.get('username')
     return render(request, 'emsys/data_warning.html', {
         'tip':'',
         'status':1,
         'logged':ls_perm(username)
         })
-
-
 
 #######################################################################################################################################
 #做TCP服务器接收数据部分

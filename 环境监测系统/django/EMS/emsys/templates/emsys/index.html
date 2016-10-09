@@ -6,8 +6,9 @@
                 <link rel="stylesheet" href="{% static 'emsys/styles/index.css' %}">
         </head>
         <body>
-            <div id="left">
-            <h1>数据展示部分</h1>
+<div class='left_bar'>
+	<div class='data_view'>
+		<div class='h1'>数据展示部分</div>
                 <h3><input name='adv' type='radio' checked="checked">地点优先</input></h3>
                     {% for device in logged.device_p %}
                     <h5><input type="checkbox" checked="checked">{{device}}</input></h5>
@@ -17,10 +18,11 @@
                     <h5><input type="checkbox" checked="checked">湿度</input></h5>
                     <h5><input type="checkbox" checked="checked">PM2.5</input></h5>
                     <h5><input type="checkbox" checked="checked">PM10</input></h5>
-
-            <h1>管理部分</h1>
-
-                <h3>登录区</h3>
+	</div>
+	<div class='manage_part'>
+		<div class='h1'>管理部分</div>
+		<div class='login'>
+			<div class='h2'>登录区</div>
                     {% if status == 0 %}
                         <form action="/emsys/login/" method="post">
                             {% csrf_token %}
@@ -37,16 +39,16 @@
 
             {% if status == 1 %}
                 {% if logged.device == True %}
-                    <h3>设备管理区</h3>
+				<div class='h2'>设备管理区</div>
                         {% for device in logged.device_p %}
                         <h5><a href='/emsys/dev/edit/{{device.id}}/'>{{device}}</a></h5>
                         {% endfor %}
                         <h5><a href='/emsys/dev/add/'>添加设备</a></h5>
                 {% endif %}
-
-
+		</div>
+		<div class='user'>
                 {% if logged.master == 'S' %}
-                    <h3>用户管理区</h3>
+			<div class='h2'>用户管理区</div>
                     <h5><a href='/emsys/usergroup/add/'>添加用户组</a></h5>
                     {% for key, value in logged.master_s.items %}
                         <h4><a href='/emsys/usergroup/edit/{{value.0}}/'>{{key}}</a></h4>
@@ -56,24 +58,26 @@
                             <h5><a href='/emsys/user/add/'>添加用户</a></h5>
                     {% endfor %}
                 {% elif logged.master == 'G' %}
-                    <h3>用户管理区</h3>
+				<div class='h2'>用户管理区</div>
                     <h4><a href='/emsys/usergroup/edit/{{logged.group_id}}'>{{logged.group_n}}</h4>
                         {% for person in logged.group_m %}
                             <h5><a href='/emsys/user/edit/{{person.id}}'>{{person.username}}</a></h5>
                         {% endfor %}
                 {% elif logged.master == 'N' %}
-                    <h3>用户管理区</h3>
+				<div class='h2'>用户管理区</div>
                 {% endif %}
                     <h4><a href='/emsys/user/self/'>修改个人信息</a></h4>
-
-
-                    <h3>数据管理区</h3>
+		</div>
+		<div class='data'>
+			<div class='h2'>数据管理区</div>
                         <h5><a href='/emsys/data/history/'>数据查询</a></h5>
                         <h5><a href='/emsys/data/warning/'>警报设置</a></h5>
             {% endif %}
-            </div>
-            <div id='right'>
+		</div>
+	</div>
+</div>
+<div id='right'>
                     主页，这里放豆豆提供给我的数据图，会用ajax通讯
-            </div>
+</div>
         </body>
 </html>
