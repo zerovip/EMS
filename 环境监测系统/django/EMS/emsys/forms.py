@@ -1,5 +1,6 @@
 from django import forms
 from django.forms import ModelForm
+from django.utils.translation import ugettext_lazy as _
 
 from .models import User, Usergroup, Device
 
@@ -32,6 +33,23 @@ class UserForm(ModelForm):
                 'charge':_('数据管理包括查询历史数据、下载数据。'),
                 'device':_('设备管理包括对设备的添加、删除，设备信息的编辑，反向远程控制，与设置报警阈值。'),
                 'master':_('超级管理员享有对所有用户的管理权限，组管理员享有对该用户所在组的所有用户的管理权限，其他人只拥有对自己基本信息的修改权限。'),
+                }
+
+#编辑自己页的表单，在个人信息编辑页渲染
+class SelfForm(ModelForm):
+    class Meta:
+        model = User
+        fields = [
+                'username',
+                'realname',
+                'password',
+                'email',
+                ]
+        labels = {
+                'username':_('用户名'),
+                'realname':_('真实姓名'),
+                'password':_('密码'),
+                'email':_('邮箱'),
                 }
 
 #用户组表单，在添加用户组、编辑用户组页面渲染

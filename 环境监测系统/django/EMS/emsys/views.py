@@ -3,6 +3,7 @@ import socket
 from django.shortcuts import render, redirect
 
 from .models import User, Usergroup, Device
+from .forms import UserForm, UsergroupForm, DeviceForm, SelfForm
 
 #######################################################################################################################################
 #预处理或功能集成部分
@@ -86,6 +87,54 @@ def login_check(func):
             return resp(request, status, tip, logged)
     return wrapper
 
+#用户编辑权限检查装饰器，装饰器按照由下到上的顺序装饰
+def user_perm(func):
+    def wrapper(request, id=0):
+        name = Session(request).username
+        master = User.objects.get(username=username).master
+        if master == 'N':
+            return redirect('/emsys/')
+        elif master == 'G':
+            if id == 0:
+                return redirect('/emsys/')
+            else:
+                if User.objects.get(username=name).group == User.objects.get(id=id):
+                    midf = func(request, id)
+                    return midf
+                else:
+                    return redirect('/emsys/')
+        elif master == 'S':
+            midf = func(request, id)
+            return midf
+    return wrapper
+
+#用户组编辑权限装饰器
+def usp_perm(func):
+    def wrapper(request, id=0):
+        name = Session(request).username
+        master = User.objects.get(username=username).master
+        if master != 'S':
+            return redirect('/emsys')
+        else:
+            midf = func(request, id)
+            return midf
+    return wrapper
+
+#设备编辑权限装饰器
+def dev_perm(func):
+    def wrapper(request, id=0):
+        name = Session(request).username
+        device = User.objects.get(username=username).device
+        if master != True:
+            return redirect('/emsys')
+        else:
+            midf = func(request, id)
+            return midf
+    return wrapper
+
+#数据查看权限装饰器
+#已废弃，在数据页用模板进行
+
 #######################################################################################################################################
 #页面功能部分
 #######################################################################################################################################
@@ -141,80 +190,153 @@ def index(request, id):
         })
 
 #添加设备页
+@dev_perm
 @login_check
 def dev_add(request, id):
     username = request.session.get('username')
+    if request.method == 'POST':
+        form = DeviceForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/emsys/')
+    else:
+        form = DeviceForm()
     return render(request, 'emsys/add.html', {
         'tip':'',
         'status':1,
         'logged':ls_perm(username),
         'object':'设备',
+        'form':form,
         })
 
 #编辑设备页
+@dev_perm
 @login_check
 def dev_edit(request, id):
     username = request.session.get('username')
+    data = Device.objects.get(id=id)
+    if request.method == 'POST':
+        form = DeviceForm(request.POST, initial=data)
+        if form.is_valid():
+            if form.has_changed():
+                form.save()
+            return redirect('/emsys/')
+    else:
+        form = DeviceForm(instance=data)
     return render(request, 'emsys/edit.html', {
         'tip':'',
         'status':1,
         'logged':ls_perm(username),
         'object':'设备',
+        'form':form,
         })
 
 #添加用户组页
+@usp_perm
 @login_check
 def usgp_add(request, id):
     username = request.session.get('username')
+    if request.method == 'POST':
+        form = UsergroupForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/emsys/')
+    else:
+        form = UsergroupForm()
     return render(request, 'emsys/add.html', {
         'tip':'',
         'status':1,
         'logged':ls_perm(username),
         'object':'用户组',
+        'form':form,
         })
 
 #编辑用户组页
+@usp_perm
 @login_check
 def usgp_edit(request, id):
     username = request.session.get('username')
+    data = Usergroup.objects.get(id=id)
+    if request.method == 'POST':
+        form = UsergroupForm(request.POST, initial=data)
+        if form.is_valid():
+            if form.has_changed():
+                form.save()
+            return redirect('/emsys/')
+    else:
+        form = UsergroupForm(instance=data)
     return render(request, 'emsys/edit.html', {
         'tip':'',
         'status':1,
         'logged':ls_perm(username),
         'object':'用户组',
+        'form':form,
         })
 
 #添加用户页
+@user_perm
 @login_check
 def user_add(request, id):
     username = request.session.get('username')
+    if request.method == 'POST':
+        form = UserForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/emsys/')
+    else:
+        form = UserForm()
     return render(request, 'emsys/add.html', {
         'tip':'',
         'status':1,
         'logged':ls_perm(username),
         'object':'用户',
+        'form':form,
         })
 
 #编辑用户页
 #这里加判断，如果id等于自己，redirect到self
+@user_perm
 @login_check
 def user_edit(request, id):
     username = request.session.get('username')
+    if User.objects.get(username=username).id == id:
+        return redirect('/emsys/user/self/')
+    else:
+        data = User.objects.get(id=id)
+        if request.method == 'POST':
+            form = UserForm(request.POST, initial=data)
+            if form.is_valid():
+                if form.has_changed():
+                    form.save()
+                return redirect('/emsys/')
+        else:
+            form = UserForm(instance=data)
     return render(request, 'emsys/edit.html', {
         'tip':'',
         'status':1,
         'logged':ls_perm(username),
         'object':'用户',
+        'form':form,
         })
 
 #编辑个人信息页
 @login_check
 def self(request, id):
     username = request.session.get('username')
+    data = User.objects.get(username=username)
+    if request.method == 'POST':
+        form = SelfForm(request.POST, initial=data)
+        if form.is_valid():
+            if form.has_changed():
+                form.save()
+            return redirect('/emsys/')
+    else:
+        form = SelfForm(instance=data)
     return render(request, 'emsys/self.html', {
         'tip':'',
         'status':1,
         'logged':ls_perm(username),
+        'form':form,
         })
 
 #数据查询页
