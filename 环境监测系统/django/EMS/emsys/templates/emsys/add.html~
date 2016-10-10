@@ -103,11 +103,6 @@
 </div>
             <div class='right_part'>
                     {{object}}添加页
-                    <form action='' method='post'>
-                            {% csrf_token %}
-                            {{form}}
-                            <input type='submit' value='添加'/>
-                    </form>
             </div>
         </body>
 </html>

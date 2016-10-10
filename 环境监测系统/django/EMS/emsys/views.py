@@ -91,14 +91,14 @@ def login_check(func):
 def user_perm(func):
     def wrapper(request, id=0):
         name = Session(request).username
-        master = User.objects.get(username=username).master
+        master = User.objects.get(username=name).master
         if master == 'N':
             return redirect('/emsys/')
         elif master == 'G':
-            if id == 0:
+            if int(id) == 0:
                 return redirect('/emsys/')
             else:
-                if User.objects.get(username=name).group == User.objects.get(id=id):
+                if User.objects.get(username=name).group == User.objects.get(id=int(id)).group:
                     midf = func(request, id)
                     return midf
                 else:
@@ -112,7 +112,7 @@ def user_perm(func):
 def usp_perm(func):
     def wrapper(request, id=0):
         name = Session(request).username
-        master = User.objects.get(username=username).master
+        master = User.objects.get(username=name).master
         if master != 'S':
             return redirect('/emsys')
         else:
@@ -124,8 +124,8 @@ def usp_perm(func):
 def dev_perm(func):
     def wrapper(request, id=0):
         name = Session(request).username
-        device = User.objects.get(username=username).device
-        if master != True:
+        device = User.objects.get(username=name).device
+        if device != True:
             return redirect('/emsys')
         else:
             midf = func(request, id)
@@ -214,9 +214,9 @@ def dev_add(request, id):
 @login_check
 def dev_edit(request, id):
     username = request.session.get('username')
-    data = Device.objects.get(id=id)
+    data = Device.objects.get(id=int(id))
     if request.method == 'POST':
-        form = DeviceForm(request.POST, initial=data)
+        form = DeviceForm(request.POST, initial=data.__dict__)
         if form.is_valid():
             if form.has_changed():
                 form.save()
@@ -229,6 +229,8 @@ def dev_edit(request, id):
         'logged':ls_perm(username),
         'object':'设备',
         'form':form,
+        'id':id,
+        'part':'dev',
         })
 
 #添加用户组页
@@ -256,7 +258,7 @@ def usgp_add(request, id):
 @login_check
 def usgp_edit(request, id):
     username = request.session.get('username')
-    data = Usergroup.objects.get(id=id)
+    data = Usergroup.objects.get(id=int(id))
     if request.method == 'POST':
         form = UsergroupForm(request.POST, initial=data)
         if form.is_valid():
@@ -271,6 +273,8 @@ def usgp_edit(request, id):
         'logged':ls_perm(username),
         'object':'用户组',
         'form':form,
+        'id':id,
+        'part':'usergroup',
         })
 
 #添加用户页
@@ -299,10 +303,10 @@ def user_add(request, id):
 @login_check
 def user_edit(request, id):
     username = request.session.get('username')
-    if User.objects.get(username=username).id == id:
+    if User.objects.get(username=username).id == int(id):
         return redirect('/emsys/user/self/')
     else:
-        data = User.objects.get(id=id)
+        data = User.objects.get(id=int(id))
         if request.method == 'POST':
             form = UserForm(request.POST, initial=data)
             if form.is_valid():
@@ -317,6 +321,8 @@ def user_edit(request, id):
         'logged':ls_perm(username),
         'object':'用户',
         'form':form,
+        'id':id,
+        'part':'user',
         })
 
 #编辑个人信息页

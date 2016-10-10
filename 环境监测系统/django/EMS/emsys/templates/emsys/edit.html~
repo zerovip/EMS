@@ -2,7 +2,7 @@
 {% load staticfiles %}
 <html>
         <head>
-                <title>{{object}}添加页</title>
+                <title>{{object}}编辑页</title>
                 <link rel="stylesheet" href="{% static 'emsys/styles/index.css' %}">
         </head>
         <body>
@@ -102,12 +102,7 @@
 	</div>
 </div>
             <div class='right_part'>
-                    {{object}}添加页
-                    <form action='' method='post'>
-                            {% csrf_token %}
-                            {{form}}
-                            <input type='submit' value='添加'/>
-                    </form>
+                    {{object}}编辑页
             </div>
         </body>
 </html>

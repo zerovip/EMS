@@ -103,6 +103,11 @@
 </div>
             <div class='right_part'>
                     个人信息编辑页
+                    <form action='' method='post'>
+                            {% csrf_token %}
+                            {{form}}
+                            <input type='submit' value='提交更改'/>
+                    </form>
             </div>
         </body>
 </html>

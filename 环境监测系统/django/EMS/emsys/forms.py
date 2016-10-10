@@ -45,6 +45,11 @@ class SelfForm(ModelForm):
                 'password',
                 'email',
                 ]
+        widgets = {
+                'password':forms.TextInput(attrs={
+                    'type':'password',
+                    })
+                }
         labels = {
                 'username':_('用户名'),
                 'realname':_('真实姓名'),
