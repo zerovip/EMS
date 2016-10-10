@@ -16,7 +16,7 @@ urlpatterns=[
 
     url(r'^user/add/$', views.user_add, name='user_add'),
     url(r'^user/edit/(?P<id>[0-9]+)/$', views.user_edit, name='user_edit'),
-    url(r'user/self/$',views.self, name='self'),
+    url(r'user/self/$', views.self, name='self'),
 
     url(r'^data/history/$', views.data_history, name='data_history'),
     url(r'^data/warning/$', views.data_warning, name='data_warning'),

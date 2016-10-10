@@ -6,27 +6,82 @@
 	font-family: 微软雅黑；
 }
 .left_bar{
-	width: 360px;
-	height:1000px;
-	margin-top: 250px;
-	margin-left: 100px;
+	width: 300px;
+	/*没有height会自动*/
+	margin-top: 10px;
+	margin-left: 10px;
+	padding-bottom: 20px;
 	border-radius: 10px;
 	box-shadow: -0.5px 2px 3px #888888;
 	background-color: #D2CDEE;
 }
+.top_part{
+	position: relative;
+	padding-top: 14px;
+	padding-left: 15px;
+}
 .h1{
-	padding-top: 19px;
-	height: 16px;
-	font-size: 16px;
-	line-height: 16px;
+	position: relative;
+	/*教程中讲的普通流似乎并不是这个relative，但我这里不写relative似乎也可以，还需再搞清楚二者区别*/
+	/*height: 20px;*/
+	/*如果内容高度超过了height会怎样？干脆不写height让它自动margin*/
+	font-size: 26px;
+	/*line-height: 0px;*/ 
+	/*line-height在只有一行的时候，如果不写0px会有问题。。。？？*/
 	color: white;
 	font-weight: 900;
-	padding-bottom: 6px;
-	border-bottom: 3px white solid;
+	border-bottom: 6px white solid;
 }
-#right{
-width:40%;
+.sub_part{
+	position: relative;
+	padding-top: 10px;
+	padding-left: 25px;
+	/*有没有内框，element的框。。。*/
+}
+.h2{
+	/*怎么把radio的圈圈弄大一点*/
+	position: relative;
+	padding-bottom: 6px;
+	font-size: 22px; 
+	font-weight: 700;
+	color: white;
+}
+.content{
+	/*checkbox也要大一点*/
+	position: relative;
+	padding-top: 2px;
+	padding-left: 20px;
+	font-size: 18px;
+	font-weight: 600;
+	line-height: 24px;
+}
+.content_below{
+	position: relative;
+	padding-left: 16px;
+	font-size: 22px;
+	font-weight: 400;
+	line-height: 26px;
+}
+.add{
+	position: relative;
+	padding-top: 16px;
+	color: blue;
+	font-size: 14px;
+	line-height: 16px;
+}
+.add_{
+	position: relative;
+	padding-top: 10px;
+	padding-left: 16px;
+	color: blue;
+	font-size: 14px;
+	line-height: 16px;
+}
+.self{
+	padding-top: 15px;
+}
+.right_part{
 position:absolute;
-top:3px;
+top:10px;
 right:20px;
 }

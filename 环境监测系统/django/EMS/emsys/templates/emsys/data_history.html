@@ -6,73 +6,102 @@
                 <link rel="stylesheet" href="{% static 'emsys/styles/index.css' %}">
         </head>
         <body>
-            <div id="left">
-            <h1>数据展示部分</h1>
-                <h3><input name='adv' type='radio' checked="checked">地点优先</input></h3>
-                    {% for device in logged.device_p %}
-                    <h5><input type="checkbox" checked="checked">{{device}}</input></h5>
-                    {% endfor %}
-                <h3><input name='adv' type='radio'>数据优先</input></h3>
-                    <h5><input type="checkbox" checked="checked">温度</input></h5>
-                    <h5><input type="checkbox" checked="checked">湿度</input></h5>
-                    <h5><input type="checkbox" checked="checked">PM2.5</input></h5>
-                    <h5><input type="checkbox" checked="checked">PM10</input></h5>
-
-            <h1>管理部分</h1>
-
-                <h3>登录区</h3>
-                    {% if status == 0 %}
-                        <form action="/emsys/login/" method="post">
-                            {% csrf_token %}
-                            <p>请登录：</p>
-                            <p>用户名：<input type="text" name="username" /></p>
-                            <p>密码：<input type="password" name="password" /></p>
-                            <input type="submit" value="登陆" />
-                            <p>{{tip}}</p>
-                        </form>
-                    {% elif status == 1 %}
-                        已登陆：{{logged.username}}<br/>
-                        <a href='/emsys/logout/'>退出</a>
-                    {% endif %}
-
-            {% if status == 1 %}
-                {% if logged.device == True %}
-                    <h3>设备管理区</h3>
-                        {% for device in logged.device_p %}
-                        <h5><a href='/emsys/dev/edit/{{device.id}}/'>{{device}}</a></h5>
-                        {% endfor %}
-                        <h5><a href='/emsys/dev/add/'>添加设备</a></h5>
-                {% endif %}
-
-
-                {% if logged.master == 'S' %}
-                    <h3>用户管理区</h3>
-                    <h5><a href='/emsys/usergroup/add/'>添加用户组</a></h5>
-                    {% for key, value in logged.master_s.items %}
-                        <h4><a href='/emsys/usergroup/edit/{{value.0}}/'>{{key}}</a></h4>
-                            {% for key_, value_ in value.1.items %}
-                            <h5><a href='/emsys/user/edit/{{key_}}/'>{{value_}}</a></h5>
-                            {% endfor %}
-                            <h5><a href='/emsys/user/add/'>添加用户</a></h5>
-                    {% endfor %}
-                {% elif logged.master == 'G' %}
-                    <h3>用户管理区</h3>
-                    <h4><a href='/emsys/usergroup/edit/{{logged.group_id}}'>{{logged.group_n}}</h4>
-                        {% for person in logged.group_m %}
-                            <h5><a href='/emsys/user/edit/{{person.id}}'>{{person.username}}</a></h5>
-                        {% endfor %}
-                {% elif logged.master == 'N' %}
-                    <h3>用户管理区</h3>
-                {% endif %}
-                    <h4><a href='/emsys/user/self/'>修改个人信息</a></h4>
-
-
-                    <h3>数据管理区</h3>
-                        <h5><a href='/emsys/data/history/'>数据查询</a></h5>
-                        <h5><a href='/emsys/data/warning/'>警报设置</a></h5>
+<div class='left_bar'>
+	<div class='top_part'>
+		<div class='h1'>数据展示部分</div>
+		<div class='sub_part'>
+			<div class='h2'><input name='adv' type='radio' checked="checked">地点优先</input></div>
+			<div class='content'>
+				{% for device in logged.device_p %}
+					<p><input type="checkbox" checked="checked">{{device}}</input></p>
+				{% endfor %}
+			</div>
+		</div>
+		<div class='sub_part'>
+				<div class='h2'><input name='adv' type='radio'>数据优先</input></h3></div>
+				<div class='content'>
+                    <p><input type="checkbox" checked="checked">温度</input></p>
+                    <p><input type="checkbox" checked="checked">湿度</input></p>
+                    <p><input type="checkbox" checked="checked">PM2.5</input></p>
+                    <p><input type="checkbox" checked="checked">PM10</input></p>
+				</div>
+		</div>
+	</div>
+	<div class='top_part'>
+		<div class='h1'>管理部分</div>
+		<div class='sub_part'>
+			<div class='h2'>登录区</div>
+			<div class='content'>
+				{% if status == 0 %}
+					<form action="/emsys/login/" method="post">
+					{% csrf_token %}
+					<p>请登录：</p>
+					<p>用户名：<input type="text" name="username" /></p>
+					<p>密码：<input type="password" name="password" /></p>
+					<input type="submit" value="登陆" />
+					<p>{{tip}}</p>
+					</form>
+				{% elif status == 1 %}
+					已登陆：{{logged.username}}
+					<a href='/emsys/logout/'>退出</a>
+				{% endif %}
+			</div>
+		</div>
+		{% if status == 1 %}
+			{% if logged.device == True %}
+			<div class='sub_part'>
+				<div class='h2'>设备管理区</div>
+				<div class='content'>
+					{% for device in logged.device_p %}
+						<p><a href='/emsys/dev/edit/{{device.id}}/'>{{device}}</a></p>
+					{% endfor %}
+                        <p class='add'><a href='/emsys/dev/add/'>添加设备</a></p>
+				</div>
+			</div>
+			{% endif %}
+		<div class='sub_part'>
+			{% if logged.master == 'S' %}
+				<div class='h2'>用户管理区</div>
+				<div class='content'>
+					{% for key, value in logged.master_s.items %}
+						<p><a href='/emsys/usergroup/edit/{{value.0}}/'>●{{key}}</a></p>
+						<div class='content_below'>
+						{% for key_, value_ in value.1.items %}
+							<p><a href='/emsys/user/edit/{{key_}}/'>{{value_}}</a></p>
+						{% endfor %}
+						</div>
+						<p class='add_'><a href='/emsys/user/add/{{value.0}}/'>添加 {{key}} 组用户</a></p>
+					{% endfor %}
+					<p class='add'><a href='/emsys/usergroup/add/'>添加用户组</a></p>
+				</div>
+			{% elif logged.master == 'G' %}
+				<div class='h2'>用户管理区</div>
+				<div class='content'>
+					<p><a href='/emsys/usergroup/edit/{{logged.group_id}}/'>{{logged.group_n}}</p>
+					<div class='content_below'>
+					{% for person in logged.group_m %}
+						<p><a href='/emsys/user/edit/{{person.id}}/'>{{person.username}}</a></p>
+					{% endfor %}
+					</div>
+				</div>
+			{% elif logged.master == 'N' %}
+				<div class='h2'>用户管理区</div>
+			{% endif %}
+			<div class='content'>
+				<p class='self'><a href='/emsys/user/self/'>修改个人信息</a></p>
+			</div>
+		</div>
+		<div class='sub_part'>
+			<div class='h2'>数据管理区</div>
+			<div class='content'>
+				<p><a href='/emsys/data/history/'>数据查询</a></p>
+				<p><a href='/emsys/data/warning/'>警报设置</a></p>
+			</div>
             {% endif %}
-            </div>
-            <div id='right'>
+		</div>
+	</div>
+</div>
+            <div class='right_part'>
                     数据查询页
             </div>
         </body>
