@@ -7,8 +7,9 @@ from .models import Device
 #有可能initial也要提供出来，这个地方没有想好是只实例化一个对象出来用initial，还是再实例化一个对象出来好
 #前者可能更便捷？但后者在处理两天相交时应该更有效一些，交接完成后销毁另一个。
 #暂时使用第二种方法吧，更保险一些。做一个二向循环的指针，来决定调用哪一个对象
+#上两行存疑。。用类变量的话可能可以直接来。待做实验验证销毁部分。
 class Data_db:
-    '''定义我自己的数据库，提供接口。数据的存储分为内存和外存两部分组成。
+    '''定义我自己的数据库，提供接口。数据的存储分为内存和外存两部分组成。内存部分使用mmap实现多进程内存共享。
         内存存储四十分钟数据，每四十分钟（确切地说是每四十条数据）清空重置一次；每十分钟（每十条数据）写入一次；
         请求数据时优先使用内存，内存没有需要的数据时，使用外存。
 
@@ -35,13 +36,13 @@ class Data_db:
         '初始化一个内存列表。'
         # 重置内存与新建文件，建议每天23:59以后使用一次；新加设备时也可调用
         # 先把内存写入
-        for i in temp:
-            self.update_data(i, temp[i])
+        for i in Data_db.temp:
+            self.update_data(i, Data_db.temp[i])
         # 再重置内存
-        self.temp = {}
+        Data_db.temp = {}
         all_device = Device.objects.values()
         for device in all_device:
-            self.temp['{0}_{1}_{2}'.format(device.id, device.name, time.strftime("%Y-%m-%d", time.localtime()))] = {}
+            Data_db.temp['{0}_{1}_{2}'.format(device.id, device.name, time.strftime("%Y-%m-%d", time.localtime()))] = {}
 
     def write_in(self, msg, data):
         '写入模块，msg是一个列表[time, dev]，time格式为"2016-10-10 00:00", dev是一个数字。data是一个列表[tem, hum, pm25, pm10]。'
@@ -52,20 +53,20 @@ class Data_db:
         data = data
         # 写入内存
         try:
-            self.temp['{0}_{1}_{2}'.format(dev_id, dev_name, time[:10])][time[11:]] = data
+            Data_db.temp['{0}_{1}_{2}'.format(dev_id, dev_name, time[:10])][time[11:]] = data
         except KeyError:
             # 这里只是暂时初始化，应对特殊情况，最好还是调用self.initial()
             # 因为initial是当前系统时间，存储的时候用的时间是发过来的。所以这两句主要可以应对两天交界处的情况。
-            self.temp['{0}_{1}_{2}'.format(dev_id, dev_name, time[:10])] = {}
-            self.temp['{0}_{1}_{2}'.format(dev_id, dev_name, time[:10])][time[11:]] = data
+            Data_db.temp['{0}_{1}_{2}'.format(dev_id, dev_name, time[:10])] = {}
+            Data_db.temp['{0}_{1}_{2}'.format(dev_id, dev_name, time[:10])][time[11:]] = data
         # 写入外存与清空内存
-        d_num = len(self.temp['{0}_{1}_{2}'.format(dev_id, dev_name, time[:10])])
+        d_num = len(Data_db.temp['{0}_{1}_{2}'.format(dev_id, dev_name, time[:10])])
         if ( d_num==10 or d_num==20 or d_num==30 or d_num==40 ):
             key_name = '{0}_{1}_{2}'.format(dev_id, dev_name, time[:10])
-            all_data = self.temp['{0}_{1}_{2}'.format(dev_id, dev_name, time[:10])]
+            all_data = Data_db.temp['{0}_{1}_{2}'.format(dev_id, dev_name, time[:10])]
             self.update_data(key_name, all_data)
         if d_num == 40:
-            self.temp['{0}_{1}_{2}'.format(dev_id, dev_name, time[:10])] = {}
+            Data_db.temp['{0}_{1}_{2}'.format(dev_id, dev_name, time[:10])] = {}
 
     def update_data(self, key_name, data):
         '将内存更新至外存。'
@@ -81,22 +82,34 @@ class Data_db:
             e_file.write(json.dumps(e_data))
             e_file.close()
 
-    def read_out(self, time, dev):
-        '''time 格式为 2016-10-10 00:00，返回该时间数据；
-            dev为一个数字，代表设备id。
-            ！！注意！！：
-            这个类应该是一个主管内存的类，所以读取数据的接口，只提供单一时间接口，不提供查询一天数据的接口。
-            尽管对于这个单一时间接口，我仍然允许对无法在内存中查到的数据执行外存查询。
-            但查某一时段尤其是某一天的数据，请直接使用IO接口读取文件，不要用for循环一条一条调用本接口！
+    def read_out(self, choose, start, end=time.strftime("%Y-%m-%d %H:%M", time.localtime())):
+        '''根据豆豆给我的前端数据请求格式写成。
+            start 和 end 分别是起止时间，choose是一个列表，格式如下：
+            ['00','01','11']前一位代表设备id，后一位代表项目（0-温度，1-湿度，2-PM2.5，3-PM10）
+            如果需要一整天的数据（数据查询与导出），则 start='one_day'，end为空
+            返回值是一个字典，键为choose中的每一项，值为一个列表
+            {
+                '00':[10,20,30,40,],
+                '01':[10,20,30,40,],
+                '11':[10,20,30,40,],
+                }
         '''
-        try:
-            data = self.temp[]
+        start_ = time.mktime(time.strptime(start,'%Y-%m-%d %H:%M'))
+        end_ = time.mktime(time.strptime(end,'%Y-%m-%d %H:%M'))
+        a = []
+        while start_ != end_:
+            x = time.localtime(start_+60)
+            a.append(time.strftime('%Y-%m-%d %H:%M', x))
+            start_ += 60
+        现在需要的日期已经在a里面了，剩下的是把数据找出来，返回来。
+        try:#试着在内存中找
+            data = Data_db.temp[]
         except:
 
         finally:
             return data
 
     def __del__(self):
-        for i in temp:
-            self.update_data(i, temp[i])
+        for i in Data_db.temp:
+            self.update_data(i, Data_db.temp[i])
 # 这里写销毁之前做什么——写入外存
