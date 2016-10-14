@@ -8,6 +8,9 @@ from .models import Device
 #前者可能更便捷？但后者在处理两天相交时应该更有效一些，交接完成后销毁另一个。
 #暂时使用第二种方法吧，更保险一些。做一个二向循环的指针，来决定调用哪一个对象
 #上两行存疑。。用类变量的话可能可以直接来。待做实验验证销毁部分。
+'''
+
+'''
 class Data_db:
     '''定义我自己的数据库，提供接口。数据的存储分为内存和外存两部分组成。内存部分使用mmap实现多进程内存共享。
         内存存储四十分钟数据，每四十分钟（确切地说是每四十条数据）清空重置一次；每十分钟（每十条数据）写入一次；
@@ -26,7 +29,26 @@ class Data_db:
 
         外存在 data_db 文件夹下，存储方式为：
         temp 的键为文件名（.zero）
-        对应的值作为字符串存入'''
+        对应的值作为字符串存入
+        
+        接口统一说明：
+
+        存数据：
+            write_in(msg, data):
+            msg是一个列表[time, dev]，time格式为"2016-10-10 00:00", dev是一个数字。
+            data是一个列表[tem, hum, pm25, pm10]
+
+        读取数据：
+            read_out(choose, start, end):
+            choose是一个列表，格式示例：['00','01','11']。前一位代表设备id，后一位代表项目（0-温度，1-湿度，2-PM2.5，3-PM10）
+            start 和 end 分别是起止时间，格式为"2016-10-10 00:00"，end可以为空，代表到当前时间。
+            返回值是一个字典，键为choose中的每一项，值为一个列表。格式示例如下：
+            {
+                '00':[10,20,30,40,],
+                '01':[10,20,30,40,],
+                '11':[10,20,30,40,],
+                }
+        '''
     temp = {}
 
     def __init__(self):
@@ -83,16 +105,20 @@ class Data_db:
             e_file.close()
 
     def read_out(self, choose, start, end=time.strftime("%Y-%m-%d %H:%M", time.localtime())):
-        '''根据豆豆给我的前端数据请求格式写成。
+        '''优先在内存里找，找不到再去找外存。
+            根据豆豆给我的前端数据请求格式写成。
             start 和 end 分别是起止时间，choose是一个列表，格式如下：
             ['00','01','11']前一位代表设备id，后一位代表项目（0-温度，1-湿度，2-PM2.5，3-PM10）
-            如果需要一整天的数据（数据查询与导出），则 start='one_day'，end为空
             返回值是一个字典，键为choose中的每一项，值为一个列表
             {
                 '00':[10,20,30,40,],
                 '01':[10,20,30,40,],
                 '11':[10,20,30,40,],
                 }
+
+            ！！注意！！
+            历史查询处需要大段时间数据的请直接调用IO接口读取外存！
+            请不要用for循环调取本接口获取大段时间数据！
         '''
         start_ = time.mktime(time.strptime(start,'%Y-%m-%d %H:%M'))
         end_ = time.mktime(time.strptime(end,'%Y-%m-%d %H:%M'))
@@ -101,15 +127,24 @@ class Data_db:
             x = time.localtime(start_+60)
             a.append(time.strftime('%Y-%m-%d %H:%M', x))
             start_ += 60
-        现在需要的日期已经在a里面了，剩下的是把数据找出来，返回来。
-        try:
-            data = Data_db.temp[]
-        except:
-
-        finally:
-            return data
+        rt_data = {}
+        for item in choose:
+            rt_data[item] = []
+            for time_it in a:
+                date = time_it[:10]
+                time = time_it[11:]
+                try:
+                    rt_data[item].append(Data_da.temp['{0}_{1}_{2}'.format(item[0], Device.objects.get(id=item[0]).name, date)][time][int(item[1])])
+                except:
+                    try:
+                        read_f = open("./data_db/{0}_{1}_{2}.zero".format(item[0], Device.objects.get(id=item[0]).name, date), "r")
+                        read_d = json.load(read_f)
+                        rt_data[item].append(read_d[time][int(item[1])])
+                    except:
+                        rt_data[item].append('null')
+        return rt_data
 
     def __del__(self):
+        '销毁一个对象。在两天相交处调用。'
         for i in Data_db.temp:
             self.update_data(i, Data_db.temp[i])
-# 这里写销毁之前做什么——写入外存
