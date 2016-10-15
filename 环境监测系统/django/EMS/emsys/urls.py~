@@ -14,7 +14,7 @@ urlpatterns=[
     url(r'^usergroup/add/$', views.usgp_add, name='usgp_add'),
     url(r'^usergroup/edit/(?P<id>[0-9]+)/$', views.usgp_edit, name='usgp_edit'),
 
-    url(r'^user/add/$', views.user_add, name='user_add'),
+    url(r'^user/add/(?P<id>[0-9]+)/$', views.user_add, name='user_add'),
     url(r'^user/edit/(?P<id>[0-9]+)/$', views.user_edit, name='user_edit'),
     url(r'user/self/$', views.self, name='self'),
 

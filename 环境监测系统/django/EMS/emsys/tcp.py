@@ -1,4 +1,8 @@
+import socket
+
 from .data_db import Data_db
+
+socket.socket(family=AF_INET, type=SOCK_STREAM, proto=0, fileno=None)
 
 msg = [
         '2016-10-10 00:00',

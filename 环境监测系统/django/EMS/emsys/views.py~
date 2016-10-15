@@ -216,11 +216,14 @@ def dev_edit(request, id):
     username = request.session.get('username')
     data = Device.objects.get(id=int(id))
     if request.method == 'POST':
-        form = DeviceForm(request.POST, initial=data.__dict__)
+        form = DeviceForm(request.POST, initial=data.__dict__, instance=data)
         if form.is_valid():
             if form.has_changed():
                 form.save()
             return redirect('/emsys/')
+        else:
+            print('not valid')
+            print(form)
     else:
         form = DeviceForm(instance=data)
     return render(request, 'emsys/edit.html', {
@@ -260,7 +263,7 @@ def usgp_edit(request, id):
     username = request.session.get('username')
     data = Usergroup.objects.get(id=int(id))
     if request.method == 'POST':
-        form = UsergroupForm(request.POST, initial=data)
+        form = UsergroupForm(request.POST, initial=data.__dict__, instance=data)
         if form.is_valid():
             if form.has_changed():
                 form.save()
@@ -308,7 +311,7 @@ def user_edit(request, id):
     else:
         data = User.objects.get(id=int(id))
         if request.method == 'POST':
-            form = UserForm(request.POST, initial=data)
+            form = UserForm(request.POST, initial=data.__dict__, instance=data)
             if form.is_valid():
                 if form.has_changed():
                     form.save()
@@ -331,7 +334,7 @@ def self(request, id):
     username = request.session.get('username')
     data = User.objects.get(username=username)
     if request.method == 'POST':
-        form = SelfForm(request.POST, initial=data)
+        form = SelfForm(request.POST, initial=data.__dict__, instance=data)
         if form.is_valid():
             if form.has_changed():
                 form.save()
