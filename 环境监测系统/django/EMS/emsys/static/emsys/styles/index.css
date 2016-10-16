@@ -6,6 +6,7 @@
 	font-family: 微软雅黑；
 }
 .left_bar{
+	float:left;
 	width: 300px;
 	/*没有height会自动*/
 	margin-top: 10px;
@@ -81,4 +82,5 @@
 	padding-top: 15px;
 }
 .right_part{
+	float:left;
 }
