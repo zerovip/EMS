@@ -123,8 +123,8 @@ class Data_db:
         start_ = time.mktime(time.strptime(start,'%Y-%m-%d %H:%M'))
         end_ = time.mktime(time.strptime(end,'%Y-%m-%d %H:%M'))
         a = []
-        while start_ != end_:
-            x = time.localtime(start_+60)
+        while start_ != end_+60:
+            x = time.localtime(start_)
             a.append(time.strftime('%Y-%m-%d %H:%M', x))
             start_ += 60
         rt_data = {}

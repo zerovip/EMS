@@ -1,6 +1,9 @@
 import socket
+import json
+import time
 
 from django.shortcuts import render, redirect
+from django.http import HttpResponse
 
 from .models import User, Usergroup, Device
 from .forms import UserForm, UsergroupForm, DeviceForm, SelfForm
@@ -368,36 +371,43 @@ def data_warning(request, id):
         'logged':ls_perm(username)
         })
 
+#ajax通讯部分
+def ajax(request):
+    start = request.POST.get('start')
+    end = request.POST.get('end')
+    choose = request.POST.get('choose')
+    if choose == None:
+        choose = []
+        for dev in all_dev:
+            choose.append('{0}0'.format(dev.id))
+            choose.append('{0}1'.format(dev.id))
+            choose.append('{0}2'.format(dev.id))
+            choose.append('{0}3'.format(dev.id))
+    if start == None:
+        end = time.strftime('%Y-%m-%d %H:%M', time.localtime())
+        end_ = time.mktime(time.strptime(end, '%Y-%m-%d %H:%M'))
+        start_ = time.localtime(end_-1800)
+        start = time.strftime('%Y-%m-%d %H:%M', start_)
+        all_dev = Device.objects.all()
+        return_data = Data_db.read_out(choose, start)
+        return_data['start'] = start
+        return_data['end'] = end
+        return_data['msg'] = 'ok'
+        return_data['wait'] = 40
+    else:
+        start_ = time.mktime(time.strptime(start, '%Y-%m-%d %H:%M'))
+        if start_ >= time.time():
+            return_data = {'msg':'early', 'wait':40}
+        else:
+            if end == None:
+                return_data = Data_db.read_out(choose, start)
+            else:
+                return_data = Data_db.read_out(choose, start, end)
+            return_data['start'] = start
+            return_data['end'] = end
+            return_data['msg'] = 'ok'
+    return HttpResponse(json.dumps(return_data))
+
 #向外API接口
 def api(request):
     pass
-
-
-#######################################################################################################################################
-#做TCP服务器接收数据部分
-#这一部分其实不应该写到views里而是应该另写到一个文件里
-#######################################################################################################################################
-'''
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)    #遵守IPv4与TCP协议
-s.bind(('0.0.0.0', 1025))    #前面绑定服务器上一个网卡的IP地址，0.0.0.0表示绑定到所有网络地址
-s.listen(5)    #监听端口，指定等待连接的最大数量
-#这一部分以后再用Device那个表的数据量重写一下，加上判断等
-while True:
-    # 接受一个新连接:
-    sock, addr = s.accept()
-    # 创建新线程来处理TCP连接:
-    t = threading.Thread(target=tcplink, args=(sock, addr))
-    t.start()
-
-def tcplink(sock, addr):
-    sock.send('Welcome!')
-    while True:
-        data = sock.recv(1024)
-        time.sleep(1)
-#接下来解析data之后存进去就行了
-        if data == 'exit' or not data:
-            break
-        sock.send('Hello, %s!' % data)
-    sock.close()
-    print ('Connection from %s:%s closed.' % addr)
-'''
