@@ -9,7 +9,7 @@ password = "lizihe970106"
 
 #定义自己的数据库
 class Data_db:
-'每天实例化一次，添加设备后实例化一次。使用实例化后的对象实现写入与读出数据。'
+    '每天实例化一次，添加设备后实例化一次。使用实例化后的对象实现写入与读出数据。'
 
     def __init__(self):
         '初始化时获取所有设备并建表。'
@@ -27,7 +27,7 @@ class Data_db:
         result = cursor.fetchall()
         self.results = {}
         for i in result:
-            self.results[i[id]] = i[name]
+            self.results[i['id']] = i['name']
         db.close()
 
         db = pymysql.connect(
