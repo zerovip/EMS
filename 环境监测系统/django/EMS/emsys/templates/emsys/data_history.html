@@ -104,5 +104,43 @@
             <div class='right_part'>
                     数据查询页
             </div>
+            <table>
+			<tr>
+				<th>时间</th>
+				<th>温度</th>
+				<th>湿度</th>
+				<th>PM2.5</th>
+				<th>PM10</th>
+			</tr>
+			<tr>
+            {% if logged.tem and logged.hum and logged.pm25 and logged.pm10 %}
+                {% for i in data %}
+				        <td>i.time</td>
+                    {% if logged.tem %}
+				        <td>i.tem</td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                    {% if logged.tem %}
+				        <td>i.hum</td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                    {% if logged.tem %}
+				        <td>i.pm25</td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                    {% if logged.tem %}
+				        <td>i.pm10</td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                您没有权限查看数据。
+            {% endif %}
+			</tr>
+		    </table>
         </body>
 </html>

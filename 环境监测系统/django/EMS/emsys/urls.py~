@@ -21,5 +21,5 @@ urlpatterns=[
     url(r'^data/history/$', views.data_history, name='data_history'),
     url(r'^data/warning/$', views.data_warning, name='data_warning'),
 
-#    url(r'^api/$',views.api,name='api'),
+    url(r'^api/$',views.api,name='api'),
 ]

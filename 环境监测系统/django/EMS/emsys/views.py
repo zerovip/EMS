@@ -1,12 +1,13 @@
-import socket
 import json
 import time
+import pymysql
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 
 from .models import User, Usergroup, Device
 from .forms import UserForm, UsergroupForm, DeviceForm, SelfForm
+from .data_db import Data_db
 
 #######################################################################################################################################
 #预处理或功能集成部分
@@ -353,12 +354,29 @@ def self(request, id):
 
 #数据查询页
 @login_check
-def data_history(request, id):
+def data_history(request, need):
     username = request.session.get('username')
+    db = pymysql.connect(
+            host = "localhost",
+            user = "root",
+            password = "lizihe970106",
+            db = "emsys",
+            charset = "utf8",
+            cursorclass = pymysql.cursors.DictCursor,
+            )
+    cursor = db.cursor()
+    sql = "SELECT time, tem, hum, pm25, pm10 FROM {0}".format(need)
+    try:
+        cursor.execute(sql)
+        data_get = cursor.fetchall()
+    except pymysql.err.ProgrammingError:
+        data_get = [{'time':'没有数据。'},]
+# need(str) 需要的数据 示例：'1_地点一_20161010'
     return render(request, 'emsys/data_history.html', {
         'tip':'',
         'status':1,
-        'logged':ls_perm(username)
+        'logged':ls_perm(username),
+        'data':data_get,
         })
 
 #警报设置页
@@ -373,9 +391,10 @@ def data_warning(request, id):
 
 #ajax通讯部分
 def ajax(request):
-    start = request.POST.get('start')
-    end = request.POST.get('end')
+    start = request.POST.get('start').replace('-', '')
+    end = request.POST.get('end').replace('-', '')
     choose = request.POST.get('choose')
+    all_dev = Device.objects.all()
     if choose == None:
         choose = []
         for dev in all_dev:
@@ -384,18 +403,17 @@ def ajax(request):
             choose.append('{0}2'.format(dev.id))
             choose.append('{0}3'.format(dev.id))
     if start == None:
-        end = time.strftime('%Y-%m-%d %H:%M', time.localtime())
-        end_ = time.mktime(time.strptime(end, '%Y-%m-%d %H:%M'))
+        end = time.strftime('%Y%m%d %H:%M', time.localtime())
+        end_ = time.mktime(time.strptime(end, '%Y%m%d %H:%M'))
         start_ = time.localtime(end_-1800)
-        start = time.strftime('%Y-%m-%d %H:%M', start_)
-        all_dev = Device.objects.all()
+        start = time.strftime('%Y%m%d %H:%M', start_)
         return_data = Data_db.read_out(choose, start)
-        return_data['start'] = start
-        return_data['end'] = end
+        return_data['start'] = time.strftime('%Y-%m-%d %H:%M', start_)
+        return_data['end'] = time.strftime('%Y-%m-%d %H:%M', end_)
         return_data['msg'] = 'ok'
         return_data['wait'] = 40
     else:
-        start_ = time.mktime(time.strptime(start, '%Y-%m-%d %H:%M'))
+        start_ = time.mktime(time.strptime(start, '%Y%m%d %H:%M'))
         if start_ >= time.time():
             return_data = {'msg':'early', 'wait':40}
         else:
@@ -403,8 +421,8 @@ def ajax(request):
                 return_data = Data_db.read_out(choose, start)
             else:
                 return_data = Data_db.read_out(choose, start, end)
-            return_data['start'] = start
-            return_data['end'] = end
+            return_data['start'] = request.POST.get('start')
+            return_data['end'] = request.POST.get('end')
             return_data['msg'] = 'ok'
     return HttpResponse(json.dumps(return_data))
 

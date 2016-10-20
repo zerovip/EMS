@@ -84,3 +84,21 @@
 .right_part{
 	float:left;
 }
+table {
+	width: 100%;
+	margin-top: 20px;
+	margin-bottom: 20px;
+	border-collapse: collapse;
+}
+th {
+	text-align: left;
+	padding: 8px 5px;
+	background-color: #006;
+	color: white;
+	border-bottom: 3px solid #006;
+}
+td {
+	text-align: left;
+	padding: 5px 5px;
+	border-bottom: 1px solid #006;
+}
