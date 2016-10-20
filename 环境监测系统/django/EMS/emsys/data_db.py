@@ -1,4 +1,3 @@
-import json
 import time
 import pymysql
 
@@ -114,18 +113,12 @@ class Data_db:
             # 两天相交处以及添加设备后应重新实例化一个对象出来用。
             create_table = """CREATE TABLE {0}_{1}_{2} (
                     time CHAR(6),
-                    tem CHAR(6) NOT NULL,
-                    hum CHAR(6) NOT NULL,
-                    pm25 CHAR(6) NOT NULL,
-                    pm10 CHAR(6) NOT NULL,
-                    PRIMARY KEY (time) )""".format(msg[1], self.results[int(msg[1])], msg[0][:8])
-            try:
-                cursor.execute(create_table)
-                cursor.execute(sql)
-            except pymysql.err.InternalError:
-                pass
-            print(sql)
-            raise
+                    tem CHAR(6),
+                    hum CHAR(6),
+                    pm25 CHAR(6),
+                    pm10 CHAR(6) )""".format(msg[1], self.results[int(msg[1])], msg[0][:8])
+            cursor.execute(create_table)
+            cursor.execute(sql)
         db.commit()
         db.close()
 
