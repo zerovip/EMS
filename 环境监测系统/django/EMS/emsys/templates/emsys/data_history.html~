@@ -104,5 +104,66 @@
             <div class='right_part'>
                     数据查询页
             </div>
+            <div class="ask_part">
+                <p>请选择查询日期：</p>
+                <input type="date" id="date">
+                <p>请选择查询设备：</p>
+                {% for device in logged.device_p %}
+                    <p><input type="radio" name="dev" id="{{device.id}}_{{device.name}}_">{{device}}</input></p>
+				{% endfor %}
+                <button onclick="GetResult()">查询</button>
+                <script>
+                    function GetResult(){
+	                    var req_date = document.getElementById("date").value;
+                    	var obj = document.getElementsByName('dev');
+                    	var theid;
+                    	for(var i=0; i<obj.length; i++){
+                    		if(obj[i].checked==true){
+                                theid = obj[i].getAttribute('id');
+                    			break;
+                    		}
+                    	}
+                        window.location.href="/emsys/data/history/"+theid+req_date+"/";
+                    }
+                </script>
+            </div>
+            <table>
+			<tr>
+				<th>时间</th>
+				<th>温度</th>
+				<th>湿度</th>
+				<th>PM2.5</th>
+				<th>PM10</th>
+			</tr>
+			<tr>
+            {% if logged.tem and logged.hum and logged.pm25 and logged.pm10 %}
+                {% for i in data %}
+                        <td>{{i.time}}</td>
+                    {% if logged.tem %}
+                        <td>{{i.tem}}</td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                    {% if logged.tem %}
+                        <td>{{i.hum}}</td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                    {% if logged.tem %}
+				        <td>{{i.pm25}}</td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                    {% if logged.tem %}
+                        <td>{{i.pm10}}</td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                您没有权限查看数据。
+            {% endif %}
+			</tr>
+		    </table>
         </body>
 </html>

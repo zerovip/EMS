@@ -1,6 +1,7 @@
 import json
 import time
 import pymysql
+from urllib.parse import unquote
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
@@ -225,9 +226,6 @@ def dev_edit(request, id):
             if form.has_changed():
                 form.save()
             return redirect('/emsys/')
-        else:
-            print('not valid')
-            print(form)
     else:
         form = DeviceForm(instance=data)
     return render(request, 'emsys/edit.html', {
@@ -354,7 +352,9 @@ def self(request, id):
 
 #数据查询页
 @login_check
-def data_history(request, need):
+def data_history(request, id):
+    if id:
+        id = unquote(id).replace('-', '')
     username = request.session.get('username')
     db = pymysql.connect(
             host = "localhost",
@@ -365,12 +365,12 @@ def data_history(request, need):
             cursorclass = pymysql.cursors.DictCursor,
             )
     cursor = db.cursor()
-    sql = "SELECT time, tem, hum, pm25, pm10 FROM {0}".format(need)
+    sql = "SELECT time, tem, hum, pm25, pm10 FROM {0}".format(id)
     try:
         cursor.execute(sql)
         data_get = cursor.fetchall()
     except pymysql.err.ProgrammingError:
-        data_get = [{'time':'没有数据。'},]
+        data_get = [{'time':'请查询。'},]
 # need(str) 需要的数据 示例：'1_地点一_20161010'
     return render(request, 'emsys/data_history.html', {
         'tip':'',

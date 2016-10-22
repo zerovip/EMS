@@ -84,13 +84,18 @@
 .right_part{
 	float:left;
 }
+.ask_part{
+    position: relative;
+}
 table {
-	width: 100%;
+    position: relative;
+	width: 1500px;
 	margin-top: 20px;
 	margin-bottom: 20px;
 	border-collapse: collapse;
 }
 th {
+    position: relative;
 	text-align: left;
 	padding: 8px 5px;
 	background-color: #006;
@@ -98,6 +103,7 @@ th {
 	border-bottom: 3px solid #006;
 }
 td {
+    position: relative;
 	text-align: left;
 	padding: 5px 5px;
 	border-bottom: 1px solid #006;
