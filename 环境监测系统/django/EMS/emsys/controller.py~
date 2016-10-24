@@ -1,0 +1,30 @@
+import socket
+
+HOST = '114.215.82.136'
+PORT = 7790
+BUFSIZ = 1024
+ADDR = (HOST, PORT)
+
+def control(ask_sent, password):
+    socket = socket.socket()
+    socket.connect(ADDR)
+    socket.send(password.encode())
+    perm = socket.recv(BUFSIZ)
+    if perm.decode() == '允许控制':
+        socket.send(ask_sent.encode())
+        stat = socket.recv(BUFSIZ)
+        if stat.decode() == '成功':
+            socket.send('exit'.encode())
+            sure = socket.recv(BUFSIZ)
+            if sure.decode() == '退出':
+                socket.close()
+                return 0
+            else:
+                socket.close()
+                return 1
+        else:
+            socket.close()
+            return 2
+    else:
+        socket.close()
+        return 3

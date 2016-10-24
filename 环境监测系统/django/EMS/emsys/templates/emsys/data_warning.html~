@@ -2,6 +2,8 @@
 {% load staticfiles %}
 <html>
         <head>
+                <script src="http://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js">
+                </script>
                 <title>警报设置页</title>
                 <link rel="stylesheet" href="{% static 'emsys/styles/index.css' %}">
         </head>
@@ -56,7 +58,6 @@
 						<p><a href='/emsys/dev/edit/{{device.id}}/'>{{device}}</a></p>
 					{% endfor %}
                         <p class='add'><a href='/emsys/dev/add/'>添加设备</a></p>
-						<p class='add'><a href='/emsys/dev/control/'>管理设备</a></p>
 				</div>
 			</div>
 			{% endif %}
@@ -104,6 +105,57 @@
 </div>
             <div class='right_part'>
                     警报设置页
+            </div>
+            <div class="ask_part">
+                <p>请选择执行设备：</p>
+                {% for device in logged.device_p %}
+                    <p><input type="radio" name="dev" id="{{device.id}}_{{device.name}}_">{{device}}</input></p>
+				{% endfor %}
+                <button onclick="TurnOn()">关闭</button>
+                <button onclick="TurnOff()">开启</button>
+                <script>
+                    function TurnOn(){
+                    	var obj = document.getElementsByName('dev');
+                    	var theid;
+                    	for(var i=0; i<obj.length; i++){
+                    		if(obj[i].checked==true){
+                                theid = obj[i].getAttribute('id');
+                    			break;
+                    		}
+                    	}
+                        $.ajax({
+                            type:"get",
+                            url:"/emsys/data/control/on/",
+                            data:{
+                                id:theid
+                                },
+                            success:function(msg){
+                            alert(mag);
+                            }
+                        })
+                    }
+                    function TurnOn(){
+                    	var obj = document.getElementsByName('dev');
+                    	var theid;
+                    	for(var i=0; i<obj.length; i++){
+                    		if(obj[i].checked==true){
+                                theid = obj[i].getAttribute('id');
+                    			break;
+                    		}
+                    	}
+                        $.ajax({
+                            type:"get",
+                            url:"/emsys/data/control/off/",
+                            data:{
+                                id:theid
+                                },
+                            success:function(msg){
+                            alert(mag);
+                            }
+                        })
+                    }
+
+                </script>
             </div>
         </body>
 </html>

@@ -5,7 +5,7 @@ import threading
 from data_db import Data_db
 
 #######################################################################################################################################
-#TCP服务器部分重写
+#TCP服务器部分重写，用了多线程。
 #######################################################################################################################################
 HOST = ''
 PORT = 7790
@@ -38,15 +38,15 @@ def handle_cont(sock):
             break
         if data.decode()[:7] == 'ADDANID':
             prepare.append(int(data.decode()[7:]))
-            sock.send('退出'.encode)
+            sock.send('成功'.encode)
         elif data.decode()[:4] == 'STOP':
             id = int(data.decode()[4:])
             linking_dev[id].send('\r\nstop\r\n'.encode())
-            sock.send('已停止'.encode)
+            sock.send('成功'.encode)
         elif data.decode()[:5] == 'START':
             id = int(data.decode()[5:])
             linking_dev[id].send('\r\nstat\r\n'.encode())
-            sock.send('已开启'.encode)
+            sock.send('成功'.encode)
         elif data.decode() == 'exit':
             sock.send('退出'.encode)
             sock.close()

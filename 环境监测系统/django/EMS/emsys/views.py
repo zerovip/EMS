@@ -5,10 +5,14 @@ from urllib.parse import unquote
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.db.models import Max
 
 from .models import User, Usergroup, Device
 from .forms import UserForm, UsergroupForm, DeviceForm, SelfForm
 from .data_db import Data_db
+from .controller import control
+
+control_password = 'lizihe970106'
 
 #######################################################################################################################################
 #预处理或功能集成部分
@@ -203,6 +207,8 @@ def dev_add(request, id):
         form = DeviceForm(request.POST)
         if form.is_valid():
             form.save()
+            mid = Device.objects.aggregate(Max('id'))['id__max']
+            control('ADDANID{0}'.format(mid), control_password)
             return redirect('/emsys/')
     else:
         form = DeviceForm()
@@ -237,6 +243,27 @@ def dev_edit(request, id):
         'id':id,
         'part':'dev',
         })
+
+#管理设备页
+@dev_perm
+@login_check
+def dev_control(request, id):
+    username = request.session.get('username')
+    return render(request, 'emsys/dev_control.html', {
+        'tip':'',
+        'status':1,
+        'logged':ls_perm(username),
+        })
+
+def data_control(request, action):
+    dev_id = str(request.POST.get('id'))
+    if action == 'on':
+        request = 'START'
+    elif action =='off':
+        request = 'STOP'
+    data_re = control(request+dev_id, control_password)
+    return HttpResponse(json.dumps(data_re))
+
 
 #添加用户组页
 @usp_perm
