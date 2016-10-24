@@ -410,10 +410,27 @@ def data_history(request, id):
 @login_check
 def data_warning(request, id):
     username = request.session.get('username')
+    if request.method == 'POST':
+        need = ['tem_x', 'tem_n', 'tem_e', 'hum_x', 'hum_n', 'hum_e', 'pm25_x', 'pm25_n', 'pm25_e', 'pm10_x', 'pm10_n', 'pm10_e']
+        save = {}
+        for i in need:
+            exec("{0} = request.POST.get('{0}')".format(i,))
+            exec("save['{0}'] = ".format(i) + i)
+        file_save = open("./emsys/mail.zero", "r+")
+        file_save.write(json.dumps(save))
+        file_save.close()
+        mssg = '修改成功。'
+    else:
+        mssg = '请编辑。'
+    file_save = open("./emsys/mail.zero", "r")
+    file_data = json.load(file_save)
+    file_save.close()
     return render(request, 'emsys/data_warning.html', {
         'tip':'',
         'status':1,
-        'logged':ls_perm(username)
+        'logged':ls_perm(username),
+        'mssg':mssg,
+        'file_data':file_data,
         })
 
 #ajax通讯部分

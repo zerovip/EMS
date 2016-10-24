@@ -2,8 +2,6 @@
 {% load staticfiles %}
 <html>
         <head>
-                <script src="http://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js">
-                </script>
                 <title>警报设置页</title>
                 <link rel="stylesheet" href="{% static 'emsys/styles/index.css' %}">
         </head>
@@ -58,6 +56,7 @@
 						<p><a href='/emsys/dev/edit/{{device.id}}/'>{{device}}</a></p>
 					{% endfor %}
                         <p class='add'><a href='/emsys/dev/add/'>添加设备</a></p>
+						<p class='add'><a href='/emsys/dev/control/'>管理设备</a></p>
 				</div>
 			</div>
 			{% endif %}
@@ -106,56 +105,25 @@
             <div class='right_part'>
                     警报设置页
             </div>
-            <div class="ask_part">
-                <p>请选择执行设备：</p>
-                {% for device in logged.device_p %}
-                    <p><input type="radio" name="dev" id="{{device.id}}_{{device.name}}_">{{device}}</input></p>
-				{% endfor %}
-                <button onclick="TurnOn()">关闭</button>
-                <button onclick="TurnOff()">开启</button>
-                <script>
-                    function TurnOn(){
-                    	var obj = document.getElementsByName('dev');
-                    	var theid;
-                    	for(var i=0; i<obj.length; i++){
-                    		if(obj[i].checked==true){
-                                theid = obj[i].getAttribute('id');
-                    			break;
-                    		}
-                    	}
-                        $.ajax({
-                            type:"get",
-                            url:"/emsys/data/control/on/",
-                            data:{
-                                id:theid
-                                },
-                            success:function(msg){
-                            alert(mag);
-                            }
-                        })
-                    }
-                    function TurnOn(){
-                    	var obj = document.getElementsByName('dev');
-                    	var theid;
-                    	for(var i=0; i<obj.length; i++){
-                    		if(obj[i].checked==true){
-                                theid = obj[i].getAttribute('id');
-                    			break;
-                    		}
-                    	}
-                        $.ajax({
-                            type:"get",
-                            url:"/emsys/data/control/off/",
-                            data:{
-                                id:theid
-                                },
-                            success:function(msg){
-                            alert(mag);
-                            }
-                        })
-                    }
-
-                </script>
-            </div>
+            <div>
+                    {{mssg}}
+                    <form action="" method="post">
+                    <p>上下限设置</p>
+                    {% csrf_token %}
+                    温度上限：<input type="number" step="0.01" name="tem_x" min="-20" max="79.99" value={{file_data.tem_x}}>
+                    温度下限：<input type="number" step="0.01" name="tem_n" min="-20" max="79.99" value={{file_data.tem_n}}>
+                    湿度上限：<input type="number" step="0.01" name="hum_x" min="0" max="99.99" value={{file_data.hum_x}}>
+                    湿度下限：<input type="number" step="0.01" name="hum_n" min="0" max="99.99" value={{file_data.hum_n}}>
+                    PM2.5上限：<input type="number" name="pm25_x" min="0" max="9999" value={{file_data.pm25_x}}>
+                    PM2.5下限：<input type="number" name="pm25_n" min="0" max="9999" value={{file_data.pm25_n}}>
+                    PM10上限：<input type="number" name="pm10_x" min="0" max="9999" value={{file_data.pm10_x}}>
+                    PM10下限：<input type="number" name="pm10_n" min="0" max="9999" value={{file_data.pm10_n}}>
+                    <p>警报发送设置</p>
+                    温度：<input type="email" name="tem_e" value={{file_data.tem_e}}>
+                    湿度：<input type="email" name="hum_e" value={{file_data.hum_e}}>
+                    PM2.5：<input type="email" name="pm25_e" value={{file_data.pm25_e}}>
+                    PM10：<input type="email" name="pm10_e" value={{file_data.pm10_e}}>
+                    <input type="submit" value="提交">
+                    </form>
         </body>
 </html>
