@@ -83,6 +83,7 @@
 }
 .right_part{
 	float:left;
+	background: /*#eee*/#f3c00a;
 }
 .ask_part{
     position: relative;
@@ -107,4 +108,10 @@ td {
 	text-align: left;
 	padding: 5px 5px;
 	border-bottom: 1px solid #006;
+}
+#graphs {
+    margin: 40px auto;
+    width: 500px;
+    min-height: 600px;
+    background: #fff;
 }

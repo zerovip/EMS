@@ -2,6 +2,9 @@
 {% load staticfiles %}
 <html>
         <head>
+				<meta charset="utf-8">
+				<meta http-equiv="x-ua-compatible" content="ie=edge">
+				<meta name="renderer" content="webkit">
 				<script src="http://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js">
                 </script>
                 <title>设备管理页</title>
@@ -12,22 +15,28 @@
 	<div class='top_part'>
 		<div class='h1'>数据展示部分</div>
 		<div class='sub_part'>
-			<div class='h2'><input name='adv' type='radio' checked="checked">地点优先</input></div>
+			<div class='h2'><input name='groupby' type='radio' value="position" checked="checked">地点优先</input></div>
 			<div class='content'>
 				{% for device in logged.device_p %}
-					<p><input type="checkbox" checked="checked">{{device}}</input></p>
+					<label><p><input type="checkbox" name="position" value="{{device.id}}" checked="checked">{{device}}</input></p></label>
 				{% endfor %}
 			</div>
 		</div>
 		<div class='sub_part'>
-				<div class='h2'><input name='adv' type='radio'>数据优先</input></h3></div>
+				<div class='h2'><input name='groupby' type='radio' value="item">数据优先</input></h3></div>
 				<div class='content'>
-                    <p><input type="checkbox" checked="checked">温度</input></p>
-                    <p><input type="checkbox" checked="checked">湿度</input></p>
-                    <p><input type="checkbox" checked="checked">PM2.5</input></p>
-                    <p><input type="checkbox" checked="checked">PM10</input></p>
+                    <label><p><input type="checkbox" name="item" value="0" checked="checked" data-unit="°C">温度</input></p></label>
+                    <label><p><input type="checkbox" name="item" value="1" checked="checked" data-unit="%">湿度</input></p></label>
+                    <label><p><input type="checkbox" name="item" value="2" checked="checked" data-unit="μg/m3">PM2.5</input></p></label>
+                    <label><p><input type="checkbox" name="item" value="3" checked="checked" data-unit="μg/m3">PM10</input></p></label>
 				</div>
 		</div>
+		<div id="dateset" class='sub_part'>
+            <span id="realtime">实时</span>
+            <input type='text' class="flatpickr" data-enable-time="true" data-time_24hr="true" data-minute-increment="10" data-max-date='today' data-min-date='2016-09-10' value="today">
+            <input type='text' class="flatpickr" data-enable-time="true" data-time_24hr="true" data-minute-increment="10" data-max-date='today' data-min-date='2016-09-10' value="today">
+            <button id="choosetime">确定</button>
+        </div>
 	</div>
 	<div class='top_part'>
 		<div class='h1'>管理部分</div>

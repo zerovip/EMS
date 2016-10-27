@@ -468,10 +468,34 @@ def data_warning(request, id):
         for i in need:
             exec("{0} = request.POST.get('{0}')".format(i,))
             exec("save['{0}'] = ".format(i) + i)
-        file_save = open("./emsys/mail.zero", "w+")
-        file_save.write(json.dumps(save))
-        file_save.close()
-        mssg = '修改成功。'
+        the_range = request.POST.get('range')
+        if the_range == 'server':
+            file_save = open("./emsys/mail.zero", "w+")
+            file_save.write(json.dumps(save))
+            file_save.close()
+            mssg = '修改成功。'
+        else:
+            if float(save['tem_n']) < 0:
+                tem_n_m = float(save['tem_n']) + 100
+            else:
+                tem_n_m = float(save['tem_n'])
+            if float(save['tem_x']) < 0:
+                tem_x_m = float(save['tem_x']) + 100
+            else:
+                tem_x_m = float(save['tem_x'])
+            the_dev_id = str(the_range).zfill(2)
+            tem_n_ = str(int(tem_n_m*100)).zfill(4)
+            hum_n_ = str(int(float(save['hum_n'])*100)).zfill(4)
+            pm25_n_ = str(int(save['pm25_n'])).zfill(4)
+            pm10_n_ = str(int(save['pm10_n'])).zfill(4)
+            tem_x_ = str(int(tem_x_m*100)).zfill(4)
+            hum_x_ = str(int(float(save['hum_x'])*100)).zfill(4)
+            pm25_x_ = str(int(save['pm25_x'])).zfill(4)
+            pm10_x_ = str(int(save['pm10_x'])).zfill(4)
+            try_con = the_dev_id + 'WARH' + tem_n_ + \
+                    hum_n_ + pm25_n_ + pm10_n_ + tem_x_ + hum_x_ + pm25_x_ + pm10_x_
+            mssg_ = control(try_con, control_password)
+            mssg = '蜂鸣器设置结果：'+str(mssg_)
     else:
         mssg = '请编辑。'
     file_save = open("./emsys/mail.zero", "r")
@@ -487,8 +511,8 @@ def data_warning(request, id):
 
 #ajax通讯部分
 def ajax(request):
-    start = request.POST.get('start').replace('-', '')
-    end = request.POST.get('end').replace('-', '')
+    start = str(request.POST.get('start')).replace('-', '')
+    end = str(request.POST.get('end')).replace('-', '')
     choose = request.POST.get('choose')
     all_dev = Device.objects.all()
     if choose == None:
@@ -498,16 +522,17 @@ def ajax(request):
             choose.append('{0}1'.format(dev.id))
             choose.append('{0}2'.format(dev.id))
             choose.append('{0}3'.format(dev.id))
-    if start == None:
+    if start == 'None':
         end = time.strftime('%Y%m%d %H:%M', time.localtime())
         end_ = time.mktime(time.strptime(end, '%Y%m%d %H:%M'))
         start_ = time.localtime(end_-1800)
         start = time.strftime('%Y%m%d %H:%M', start_)
-        return_data = Data_db.read_out(choose, start)
+        return_data = Data_db().read_out(choose, start)
         return_data['start'] = time.strftime('%Y-%m-%d %H:%M', start_)
-        return_data['end'] = time.strftime('%Y-%m-%d %H:%M', end_)
+        return_data['end'] = time.strftime('%Y-%m-%d %H:%M', time.localtime(end_))
         return_data['msg'] = 'ok'
         return_data['wait'] = 40
+        return_data['step'] = '1m'
     else:
         start_ = time.mktime(time.strptime(start, '%Y%m%d %H:%M'))
         if start_ >= time.time():
@@ -520,6 +545,7 @@ def ajax(request):
             return_data['start'] = request.POST.get('start')
             return_data['end'] = request.POST.get('end')
             return_data['msg'] = 'ok'
+            return_data['step'] = '1m'
     return HttpResponse(json.dumps(return_data))
 
 #向外API接口

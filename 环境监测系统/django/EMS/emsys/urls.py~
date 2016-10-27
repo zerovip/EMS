@@ -19,7 +19,7 @@ urlpatterns=[
 
     url(r'^user/add/(?P<id>[0-9]+)/$', views.user_add, name='user_add'),
     url(r'^user/edit/(?P<id>[0-9]+)/$', views.user_edit, name='user_edit'),
-    url(r'^user/edit/(?P<id>[0-9]+)/$', views.user_edit, name='user_edit'),
+    url(r'^user/del/(?P<id>[0-9]+)/$', views.user_del, name='user_del'),
     url(r'^user/self/$', views.self, name='self'),
 
     url(r'^data/history/(?P<id>.*)/$', views.data_history, name='data_history'),

@@ -28,4 +28,5 @@ urlpatterns=[
     url(r'^data/control/(?P<action>.*)/$', views.data_control, name='data_control'),
 
     url(r'^api/$',views.api,name='api'),
+    url(r'^ajax/$',views.ajax,name='ajax')
 ]
