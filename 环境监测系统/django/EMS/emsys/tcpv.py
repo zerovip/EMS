@@ -168,6 +168,7 @@ def handle_cont(sock):
                 linking_dev[id].send('\r\nstop\r\n'.encode())
                 sock.send('成功'.encode())
             else:
+                sock.send('该ID没有连接'.encode())
                 print('id{0} not found'.format(id))
         elif data.decode()[:5] == 'START':
             id = int(data.decode()[5:])
@@ -175,6 +176,16 @@ def handle_cont(sock):
                 linking_dev[id].send('\r\nstat\r\n'.encode())
                 sock.send('成功'.encode())
             else:
+                sock.send('该ID没有连接'.encode())
+                print('id{0} not found'.format(id))
+        elif data.decode()[2:6] == 'WARH':
+            id = int(data.decode()[:2])
+            data_ = data.decode()[2:]
+            if id in linking_dev:
+                linking_dev[id].send('\r\n{0}\r\n'.format(data_).encode())
+                sock.send('成功'.encode())
+            else:
+                sock.send('该ID没有连接'.encode())
                 print('id{0} not found'.format(id))
         elif data.decode() == 'exit':
             sock.send('退出'.encode())
