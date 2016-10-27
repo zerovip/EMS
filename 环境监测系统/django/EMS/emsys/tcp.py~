@@ -3,6 +3,7 @@ import socket
 import threading
 
 from data_db import Data_db
+from .email_SMTP import send_mail
 
 #######################################################################################################################################
 #TCP服务器部分重写，用了多线程。
@@ -168,6 +169,14 @@ def data_write(d, dev_id, date_n_time, data_list):
         print(time_rec)
         print(dev_id)
         print(tem,hum,pm25,pm10)
+        file_save = open("./emsys/mail.zero", "r")
+        file_data = json.load(file_save)
+        file_save.close()
+        for i in ['tem', 'hum', 'pm25', 'pm10']:
+            if (exec(i) > file_data[i+'_x']) or (exec(i) < file_data[i+'_n'):
+                p_l = []
+                p_l.append(file_data[i+'_e'])
+                send_mail(p_l, '环境监测系统警报提醒', i+'超标，请您查看。——邮件为自动发送，请勿回复。')
         try:
             d.write_in(
                     [time_rec, str(dev_id)],

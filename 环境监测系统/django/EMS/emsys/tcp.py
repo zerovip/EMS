@@ -112,6 +112,8 @@ while True:
                 the_dev_id = int(ask_data[6:8])
                 if the_dev_id in linking_dev:
                     # 之前得连接没有正确关闭
+                    print('之前得连接没有正确关闭，之前的端口是：')
+                    print(linking_dev[the_dev_id].getpeername())
                     linking_dev[the_dev_id].close()
                 linking_dev[the_dev_id] = tcpCliSocket
                 tcpCliSocket.send('ok{0}'.format(the_dev_id).encode())

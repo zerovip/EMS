@@ -16,7 +16,7 @@ class Device(models.Model):
 class Usergroup(models.Model):
     groupname = models.CharField(max_length=30, unique=True)
     discri = models.CharField(max_length=80)
-    num = models.IntegerField()
+    num = models.IntegerField(default=0)
     charge = models.ManyToManyField(Device)    #在这个组内新建用户时默认的  管理设备范围
     tem = models.BooleanField(default=True)    #温度数据管理权限
     hum = models.BooleanField(default=True)    #湿度数据管理权限

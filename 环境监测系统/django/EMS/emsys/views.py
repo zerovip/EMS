@@ -244,6 +244,19 @@ def dev_edit(request, id):
         'part':'dev',
         })
 
+#删除设备页
+@dev_perm
+@login_check
+def dev_del(request, id):
+    username = request.session.get('username')
+    data = Device.objects.get(id=int(id))
+    data.delete()
+    return render(request, 'emsys/tip.html', {
+        'tip':'',
+        'status':1,
+        'logged':ls_perm(username),
+        })
+
 #管理设备页
 @dev_perm
 @login_check
@@ -255,6 +268,7 @@ def dev_control(request, id):
         'logged':ls_perm(username),
         })
 
+#单片机控制器启动
 def data_control(request, action):
     dev_id = str(request.POST.get('id'))
     if action == 'on':
@@ -263,7 +277,6 @@ def data_control(request, action):
         request = 'STOP'
     data_re = control(request+dev_id, control_password)
     return HttpResponse(json.dumps(data_re))
-
 
 #添加用户组页
 @usp_perm
@@ -307,6 +320,20 @@ def usgp_edit(request, id):
         'form':form,
         'id':id,
         'part':'usergroup',
+        'total':Usergroup.objects.get(id=int(id)).num
+        })
+
+#删除用户组页
+@usp_perm
+@login_check
+def usgp_del(request, id):
+    username = request.session.get('username')
+    data = Usergroup.objects.get(id=int(id))
+    data.delete()
+    return render(request, 'emsys/tip.html', {
+        'tip':'',
+        'status':1,
+        'logged':ls_perm(username),
         })
 
 #添加用户页
@@ -318,9 +345,21 @@ def user_add(request, id):
         form = UserForm(request.POST)
         if form.is_valid():
             form.save()
+            belong=form.cleaned_data['group']
+            belong.num += 1
+            belong.save()
             return redirect('/emsys/')
     else:
-        form = UserForm()
+        belong = Usergroup.objects.get(id=id)
+        form = UserForm(initial={
+            'group':belong,
+            'charge':belong.charge.all(),
+            'tem':belong.tem,
+            'hum':belong.hum,
+            'pm25':belong.pm25,
+            'pm10':belong.pm10,
+            'device':belong.device,
+            })
     return render(request, 'emsys/add.html', {
         'tip':'',
         'status':1,
@@ -377,6 +416,19 @@ def self(request, id):
         'form':form,
         })
 
+#删除用户页
+@user_perm
+@login_check
+def user_del(request, id):
+    username = request.session.get('username')
+    data = User.objects.get(id=int(id))
+    data.delete()
+    return render(request, 'emsys/tip.html', {
+        'tip':'',
+        'status':1,
+        'logged':ls_perm(username),
+        })
+
 #数据查询页
 @login_check
 def data_history(request, id):
@@ -416,7 +468,7 @@ def data_warning(request, id):
         for i in need:
             exec("{0} = request.POST.get('{0}')".format(i,))
             exec("save['{0}'] = ".format(i) + i)
-        file_save = open("./emsys/mail.zero", "r+")
+        file_save = open("./emsys/mail.zero", "w+")
         file_save.write(json.dumps(save))
         file_save.close()
         mssg = '修改成功。'

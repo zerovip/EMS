@@ -1,0 +1,72 @@
+import time
+import socket
+
+tcpServerSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+tcpServerSocket.bind(ADDR)
+tcpServerSocket.listen(5)
+
+while True:
+    print('--------等待连接--------')
+    tcpCliSocket, addr = tcpServerSocket.accept()
+    print('--------与{0}建立了连接--------'.format(addr))
+    try:
+        check_data = tcpCliSocket.recv(BUFSIZ)
+    except ConnectionResetError:
+        print('--------该连接被迫下线--------')
+    print(check_data)
+    if (check_data[0] == 10) & (check_data[1] == 13) & (check_data[-2] == 13)& (check_data[-1] == 10) & (len(check_data)==12):
+        ask_data = (check_data[2:10]).decode()
+        print(ask_data)
+        if ask_data == 'DEVMYNUM':
+            send_code = '\r\n01\r\n'.encode()
+            tcpCliSocket.send(send_code)
+            print('是请求ID并返回了01')
+        else:
+            print('不是请求ID，没有返回')
+    else:
+        print('不合格')
+
+
+
+    #干扰数据
+    if(len(check_data)==1):
+        print('--------strange info--------')
+        print(check_data)
+        continue
+    # 这条信息为区分单片机客户端与控制器客户端所用
+    print(check_data)
+    if (check_data[0] == 10) & (check_data[1] == 13) & (check_data[-2] == 13)& (check_data[-1] == 10):
+        if len(check_data) == 12:
+            ask_data = (check_data[2:10]).decode()
+            print(ask_data)
+            if ask_data == 'DEVMYNUM':
+                # 新设备
+                if len(prepare) != 0:
+                    the_id = prepare[0]
+                    if the_id in linking_dev:
+                        # 应该不会出现。出现说明 prepare 列表出现了错误
+                        print('出现了问题，请检查 prepare 不应该有已经分配出去的ID')
+                    linking_dev[the_id] = tcpCliSocket
+                    del prepare[0]
+                    send_code = '\r\nok{0:02}\r\n'.format(the_id).encode()
+                    tcpCliSocket.send(send_code)
+                    print('I will start a new thread%d'.format(the_id))
+                    data_rev = threading.Thread(target=handle_data, args=(tcpCliSocket, the_id))
+                    data_rev.start()
+                else:
+                    # 先去添加设备页添加设备再操作
+                    tcpCliSocket.send('err1'.encode())
+                    tcpCliSocket.close()
+            elif ask_data[0:6] == 'DEVNUM':
+                # 原有设备
+                the_dev_id = int(ask_data[6:8])
+                if the_dev_id in linking_dev:
+                    # 之前得连接没有正确关闭
+                    linking_dev[the_dev_id].close()
+                linking_dev[the_dev_id] = tcpCliSocket
+                send_code = '\r\nok{0:02}\r\n'.format(the_dev_id).encode()
+                tcpCliSocket.send(send_code)
+                data_rev = threading.Thread(target=handle_data, args=(tcpCliSocket, the_dev_id))
+                data_rev.start()
+            else:
+

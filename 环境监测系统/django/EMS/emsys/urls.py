@@ -11,12 +11,15 @@ urlpatterns=[
     url(r'^dev/add/$', views.dev_add, name='dev_add'),
     url(r'^dev/edit/(?P<id>[0-9]+)/$', views.dev_edit, name='dev_edit'),
     url(r'^dev/control/$', views.dev_control, name='dev_control'),
+    url(r'^dev/del/(?P<id>[0-9]+)/$', views.dev_del, name='dev_del'),
 
     url(r'^usergroup/add/$', views.usgp_add, name='usgp_add'),
     url(r'^usergroup/edit/(?P<id>[0-9]+)/$', views.usgp_edit, name='usgp_edit'),
+    url(r'^usergroup/del/(?P<id>[0-9]+)/$', views.usgp_del, name='usgp_del'),
 
     url(r'^user/add/(?P<id>[0-9]+)/$', views.user_add, name='user_add'),
     url(r'^user/edit/(?P<id>[0-9]+)/$', views.user_edit, name='user_edit'),
+    url(r'^user/del/(?P<id>[0-9]+)/$', views.user_del, name='user_del'),
     url(r'^user/self/$', views.self, name='self'),
 
     url(r'^data/history/(?P<id>.*)/$', views.data_history, name='data_history'),

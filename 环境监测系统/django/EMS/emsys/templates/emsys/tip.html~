@@ -2,7 +2,7 @@
 {% load staticfiles %}
 <html>
         <head>
-                <title>{{object}}编辑页</title>
+                <title>个人信息编辑页</title>
                 <link rel="stylesheet" href="{% static 'emsys/styles/index.css' %}">
         </head>
         <body>
@@ -103,16 +103,16 @@
 	</div>
 </div>
             <div class='right_part'>
-                    {{object}}编辑页
-                    {% if object == '用户组' %}
-                    当前组人数：{{total}}
-                    {% endif %}
-                    <form action='' method='post'>
-                            {% csrf_token %}
-                            {{form}}
-                            <input type='submit' value='提交更改'/>
-                    </form>
-                    <a href='/emsys/{{part}}/del/{{id}}/'>删除{{object}}</a>
+                <h2>删除成功！<span id='time'>5</span>秒后自动跳转，如没有跳转，请点击<a href='/emsys/'>这里</a>。</h2>
+                <script>
+                    var time=document.getElementById('time');
+                    var i=0;
+                    setInterval(function(){
+                        i++;
+                        time.innerHTML = 5-i;
+                        if(i==5) location.href = '/emsys/';
+                    },1000)
+                </script>
             </div>
         </body>
 </html>
