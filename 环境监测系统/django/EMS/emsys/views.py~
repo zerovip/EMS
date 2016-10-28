@@ -512,7 +512,7 @@ def data_warning(request, id):
 #ajax通讯部分
 def ajax(request):
     start = unquote(str(request.GET.get('start')).replace('-', ''))[:14]
-    end = unquote(str(request.POST.get('end')).replace('-', ''))[:14]
+    end = unquote(str(request.GET.get('end')).replace('-', ''))[:14]
     choose = request.POST.get('choose')
     all_dev = Device.objects.all()
     if choose == None:

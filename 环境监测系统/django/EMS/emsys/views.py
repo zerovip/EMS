@@ -545,7 +545,7 @@ def ajax(request):
                 start_ = time.mktime(time.strptime(start,"%Y%m%d %H:%M"))
                 start_l = time.localtime(start_)
                 start_r = time.strftime('%Y-%m-%d %H:%M', start_l)
-                end_l = time.localtime(start_ + the_num*60)
+                end_l = time.localtime(start_ + (the_num-1)*60)
                 end_r = time.strftime('%Y-%m-%d %H:%M', end_l)
             else:
                 m = Data_db()
