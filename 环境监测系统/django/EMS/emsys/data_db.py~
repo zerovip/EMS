@@ -117,18 +117,13 @@ class Data_db:
                     hum CHAR(6),
                     pm25 CHAR(6),
                     pm10 CHAR(6) )""".format(msg[1], self.results[int(msg[1])], msg[0][:8])
-            try:
-                cursor.execute(create_table)
-                cursor.execute(sql)
-            except pymysql.err.InternalError:
-                pass
-            print(sql)
-            raise
+            cursor.execute(create_table)
+            cursor.execute(sql)
         db.commit()
         db.close()
 
     def read_out(self, choose, start,
-            end=time.strftime("%Y%m%d %H:%M", time.localtime())):
+            end=):
         '''根据豆豆给我的前端数据请求格式写成。
 
             start 和 end 分别是起止时间。
@@ -155,6 +150,8 @@ class Data_db:
                 如需要通过比较删除其他数据，
                 可以参考本方法中 SELECT 之后的 len 方法获取。
         '''
+        if end == 'null':
+            end = time.strftime("%Y%m%d %H:%M", time.localtime())
         start_ = time.mktime(time.strptime(start,'%Y%m%d %H:%M'))
         end_ = time.mktime(time.strptime(end,'%Y%m%d %H:%M'))
         time_range = []

@@ -5,6 +5,9 @@
 	padding:0;
 	font-family: 微软雅黑；
 }
+body {
+	min-width: 820px;
+}
 .left_bar{
 	float:left;
 	width: 300px;
@@ -82,7 +85,8 @@
 	padding-top: 15px;
 }
 .right_part{
-	float:left;
+	margin-left: 320px;
+	overflow: hidden;
 	background: /*#eee*/#f3c00a;
 }
 .ask_part{
@@ -114,4 +118,29 @@ td {
     width: 500px;
     min-height: 600px;
     background: #fff;
+}
+
+
+
+
+
+.helptext,
+.right_part [type="submit"],
+.right_part form label{
+	display: block;
+	margin: 10px 0;
+}
+.left_bar input[type="checkbox"],
+.left_bar input[type="radio"]{
+	width: 20px; height: 20px;
+}
+#realtime {
+	display: inline-block;
+	cursor: pointer;
+	padding: 4px 10px;
+	margin: 3px 0;
+	background: #fff;
+}
+#realtime.on {
+	background: #3a91e6;
 }

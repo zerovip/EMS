@@ -11,7 +11,7 @@
 </head>
 <body>
 <div class='left_bar'>
-	<div class='top_part'>
+	<div class='top_part' id="control-panel">
 		<div class='h1'>数据展示部分</div>
 		<div class='sub_part'>
 			<div class='h2'><input name='groupby' type='radio' value="position" checked="checked">地点优先</input></div>
@@ -31,7 +31,7 @@
 				</div>
 		</div>
 		<div id="dateset" class='sub_part'>
-            <span id="realtime">实时</span>
+            <span id="realtime" class="on">实时</span>
             <input type='text' class="flatpickr" data-enable-time="true" data-time_24hr="true" data-minute-increment="10" data-max-date='today' data-min-date='2016-09-10' value="today">
             <input type='text' class="flatpickr" data-enable-time="true" data-time_24hr="true" data-minute-increment="10" data-max-date='today' data-min-date='2016-09-10' value="today">
             <button id="choosetime">确定</button>

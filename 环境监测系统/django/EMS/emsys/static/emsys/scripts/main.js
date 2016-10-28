@@ -1,4 +1,4 @@
-!function () {
+//!function () {
     var timer = null,getting = false, realTime = true;
     var papers = {
         position: [],
@@ -306,14 +306,14 @@
             success: function (json) {
                 getting = false;
                 if (!realTime) return;
-                var len = json['00'].length;
+                var len = json[ctrl.position[0].value+''+ctrl.item[0].value].length;
                 data.start += len*data.step;
                 data.end += len*data.step;
                 for (var k = 0; k < len; k++) {
                     for (var i = 0; i < data.curves.length; i++) {
                         for (var j = 0; j < data.curves[i].length; j++) {
                             data.curves[i][j].points.shift();
-                            data.curves[i][j].points.push(json[i+''+j][k]);
+                            data.curves[i][j].points.push(json[ctrl.position[0].value+''+ctrl.item[0].value][k]);
                         }
                     }
                 }
@@ -336,6 +336,7 @@
             dataType: 'json',
             success: function(json) {
                 if (!realTime) return;
+				$('#realtime').addClass('on');
                 data.setTime(json);
                 Paper.show();
                 clearInterval(timer);
@@ -368,6 +369,7 @@
             dataType: 'json',
             success: function(json) {
                 if (realTime) return;
+				$('#realtime').removeClass('on');
                 ChTime[0].setDate(json.start);
                 ChTime[1].setDate(json.end);
                 data.setTime(json);
@@ -401,10 +403,10 @@
         data.step_num = (data.end-data.start)/data.step;
         for (var i = 0; i < data.curves.length; i++) {
             for (var j = 0; j < data.curves[i].length; j++) {
-                data.curves[i][j].points = d[i+''+j];
+                data.curves[i][j].points = d[ctrl.position[i].value+''+ctrl.item[j].value];
             }
         }
     }
 
     Paper.init();
-}();
+//}();

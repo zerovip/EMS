@@ -511,8 +511,8 @@ def data_warning(request, id):
 
 #ajax通讯部分
 def ajax(request):
-    start = str(request.POST.get('start')).replace('-', '')
-    end = str(request.POST.get('end')).replace('-', '')
+    start = unquote(str(request.GET.get('start')).replace('-', ''))[:14]
+    end = unquote(str(request.POST.get('end')).replace('-', ''))[:14]
     choose = request.POST.get('choose')
     all_dev = Device.objects.all()
     if choose == None:
@@ -538,12 +538,22 @@ def ajax(request):
         if start_ >= time.time():
             return_data = {'msg':'early', 'wait':40}
         else:
-            if end == None:
-                return_data = Data_db.read_out(choose, start)
+            if end == 'None':
+                m = Data_db()
+                return_data = m.read_out(choose, start)
+                the_num = len(return_data[choose[0]])
+                start_ = time.mktime(time.strptime(start,"%Y%m%d %H:%M"))
+                start_l = time.localtime(start_)
+                start_r = time.strftime('%Y-%m-%d %H:%M', start_l)
+                end_l = time.localtime(start_ + the_num*60)
+                end_r = time.strftime('%Y-%m-%d %H:%M', end_l)
             else:
-                return_data = Data_db.read_out(choose, start, end)
-            return_data['start'] = request.POST.get('start')
-            return_data['end'] = request.POST.get('end')
+                m = Data_db()
+                return_data = m.read_out(choose, start, end)
+                start_r = unquote(str(request.GET.get('start')))[:14]
+                end_r = unquote(str(request.POST.get('end')))[:14]
+            return_data['start'] = start_r
+            return_data['end'] = end_r
             return_data['msg'] = 'ok'
             return_data['step'] = '1m'
     return HttpResponse(json.dumps(return_data))
