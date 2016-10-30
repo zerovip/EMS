@@ -528,9 +528,6 @@ def ajax(request):
         start_ = time.localtime(end_-1800)
         start = time.strftime('%Y%m%d %H:%M', start_)
         return_data = Data_db().read_out(choose, start)
-        print(choose)
-        print(start)
-        print(return_data)
         return_data['start'] = time.strftime('%Y-%m-%d %H:%M', start_)
         return_data['end'] = time.strftime('%Y-%m-%d %H:%M', time.localtime(end_))
         return_data['msg'] = 'ok'
